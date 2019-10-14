@@ -37,6 +37,7 @@ It is the same concept that [ESX](https://github.com/ESX-Org/es_extended) works 
 # Mod List
 
 - [Disc-Base](https://github.com/DiscworldZA/gta-resources/tree/master/disc-base)
+- [Disc-Ammo](https://github.com/DiscworldZA/gta-resources/tree/master/disc-ammo)
 - [Disc-Armory](https://github.com/DiscworldZA/gta-resources/tree/master/disc-armory)
 - [Disc-AutoRepair](https://github.com/DiscworldZA/gta-resources/tree/master/disc-autorepair)
 - [Disc-Billing](https://github.com/DiscworldZA/gta-resources/tree/master/disc-billing)

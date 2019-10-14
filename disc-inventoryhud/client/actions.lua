@@ -12,9 +12,11 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
         BlockWeaponWheelThisFrame()
+        SetCamEffect(0)
         HideHudComponentThisFrame(19)
         HideHudComponentThisFrame(20)
         HideHudComponentThisFrame(17)
+        DisableControlAction(0, 37, true) --Disable Tab
         for k, v in pairs(keys) do
             if IsDisabledControlJustReleased(0, v) then
                 UseItem(k)

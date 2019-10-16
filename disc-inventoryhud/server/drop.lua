@@ -5,20 +5,7 @@ Citizen.CreateThread(function()
     TriggerEvent('disc-inventoryhud:RegisterInventory', {
         name = 'drop',
         label = 'Drop',
-        slots = 10,
-        getInventory = function(identifier, cb)
-            getInventory(identifier, 'drop', cb)
-        end,
-        saveInventory = function(identifier, inventory)
-            if table.length(inventory) > 0 then
-                saveInventory(identifier, 'drop', inventory)
-            else
-                deleteInventory(identifier, 'drop')
-            end
-        end,
-        getDisplayInventory = function(identifier, cb, source)
-            getDisplayInventory(identifier, 'drop', cb, source)
-        end
+        slots = 10
     })
 end)
 

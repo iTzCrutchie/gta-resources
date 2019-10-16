@@ -10,6 +10,7 @@ var errorHighlightTimer = null;
 var dragging = false
 var origDrag = null;
 var draggingItem = null;
+var givingItem = null;
 var mousedown = false;
 var docWidth = document.documentElement.clientWidth;
 var docHeight = document.documentElement.clientHeight;
@@ -50,33 +51,14 @@ window.addEventListener("message", function (event) {
     } else if (event.data.action == "setInfoText") {
         $(".info-div").html(event.data.text);
     } else if (event.data.action == "nearPlayersGive" || event.data.action == "nearPlayersPay") {
-        $("#nearPlayers").html("");
-
+        successAudio.play();
+        givingItem = event.data.item;
+        $('.near-players-wrapper').find('.popup-body').html('');
         $.each(event.data.players, function (index, player) {
-            $("#nearPlayers").append('<button class="nearbyPlayerButton" data-player="' + player.player + '">' + player.label + ' (' + player.player + ')</button>');
+            $('.near-players-list .popup-body').append(`<div class="player" data-id="${player.id}" data-action="${event.data.action}">${player.id} - ${player.name}</div>`);
         });
-
-        $("#dialog").dialog("open");
-        let count = parseInt($("#count").val());
-
-
-        $(".nearbyPlayerButton").click(function () {
-            $("#dialog").dialog("close");
-            player = $(this).data("player");
-            if (event.data.action == "nearPlayersGive") {
-                $.post("http://disc-inventoryhud/GiveItem", JSON.stringify({
-                    player: player,
-                    item: event.data.item,
-                    number: count
-                }));
-            } else if (event.data.action == "nearPlayersPay") {
-                $.post("http://disc-inventoryhud/GiveCash", JSON.stringify({
-                    player: player,
-                    item: 'cash',
-                    number: count
-                }));
-            }
-        });
+        $('.near-players-wrapper').fadeIn();
+        EndDragging();
     }
 });
 
@@ -307,18 +289,21 @@ $(document).ready(function () {
     $('#give').click(function (event, ui) {
         if (dragging) {
             itemData = $(draggingItem).find('.item').data("item");
-            let count = parseInt($("#count").val());
+            let dropCount = parseInt($("#count").val());
+
+            if (dropCount === 0 || dropCount > itemData.qty) {
+                dropCount = itemData.qty
+            }
+
             if (itemData.canRemove) {
-                InventoryLog('Giving ' + count + ' ' + itemData.label + ' To Nearby Player');
                 $.post("http://disc-inventoryhud/GetNearPlayers", JSON.stringify({
-                    action: 'give',
-                    item: itemData
+                    item: itemData,
+                    action: 'give'
                 }));
-                successAudio.play();
+
             } else {
                 failAudio.play();
             }
-            EndDragging();
         }
     });
 
@@ -382,7 +367,7 @@ $(document).ready(function () {
         if (itemData !== undefined) {
             $('.tooltip-div').find('.tooltip-name').html(itemData.label);
 
-            if (itemData.unique === 0) {
+            if (!itemData.unique) {
                 if (itemData.stackable) {
                     $('.tooltip-div').find('.tooltip-uniqueness').html("Not Unique - Stack Max(" + itemData.max + ")");
                 } else {
@@ -390,6 +375,18 @@ $(document).ready(function () {
                 }
             } else {
                 $('.tooltip-div').find('.tooltip-uniqueness').html("Unique (" + itemData.max + ")");
+            }
+
+            if (itemData.description !== undefined) {
+                $('.tooltip-div').find('.tooltip-desc').html('Description: ' + itemData.description);
+            } else {
+                $('.tooltip-div').find('.tooltip-desc').html("This Item Has No Information");
+            }
+
+            if (itemData.weight !== undefined) {
+                $('.tooltip-div').find('.tooltip-weight').html('Weight: ' + itemData.weight * itemData.qty);
+            } else {
+                $('.tooltip-div').find('.tooltip-weight').hide()
             }
 
             if (itemData.staticMeta !== undefined || itemData.staticMeta !== "") {
@@ -685,37 +682,6 @@ function AddItemToSlot(slot, data) {
     slot.find('.item').data('item', data);
 }
 
-$.widget('ui.dialog', $.ui.dialog, {
-    options: {
-        // Determine if clicking outside the dialog shall close it
-        clickOutside: false,
-        // Element (id or class) that triggers the dialog opening 
-        clickOutsideTrigger: ''
-    },
-    open: function () {
-        var clickOutsideTriggerEl = $(this.options.clickOutsideTrigger),
-            that = this;
-        if (this.options.clickOutside) {
-            // Add document wide click handler for the current dialog namespace
-            $(document).on('click.ui.dialogClickOutside' + that.eventNamespace, function (event) {
-                var $target = $(event.target);
-                if ($target.closest($(clickOutsideTriggerEl)).length === 0 &&
-                    $target.closest($(that.uiDialog)).length === 0) {
-                    that.close();
-                }
-            });
-        }
-        // Invoke parent open method
-        this._super();
-    },
-    close: function () {
-        // Remove document wide click handler for the current dialog
-        $(document).off('click.ui.dialogClickOutside' + this.eventNamespace);
-        // Invoke parent close method 
-        this._super();
-    },
-});
-
 function ClearLog() {
     $('.inv-log').html('');
 }
@@ -738,3 +704,52 @@ function DisplayMoveError(origin, destination, error) {
 
     InventoryLog(error);
 }
+
+$('.exit-popup').on('click', function () {
+    givingItem = null;
+    $('.near-players-wrapper').fadeOut('normal').promise().then(function () {
+        $(this).find('.popup-body').html('');
+    });
+});
+
+$('.popup-body').on('click', '.player', function () {
+
+    let target = $(this).data('id');
+    let action = $(this).data('action');
+    let count = parseInt($("#count").val())
+    if (action === "nearPlayersGive") {
+
+        if (givingItem != null) {
+            if (count === 0 || count > givingItem.qty) {
+                count = givingItem.qty
+            }
+            InventoryLog(`Giving ${count} ${givingItem.label} To Nearby Player With Server ID ${target}`);
+            $.post("http://disc-inventoryhud/GiveItem", JSON.stringify({
+                target: target,
+                item: givingItem,
+                count: count
+            }), function (status) {
+                if (status) {
+                    $('.near-players-wrapper').fadeOut();
+
+                    if (count == givingItem.qty) {
+                        ResetSlotToEmpty(givingItem.slot);
+                    }
+
+                    givingItem = null;
+                }
+            });
+        }
+    } else if (action === "nearPlayersPay") {
+        InventoryLog(`Giving ${count} Cash To Nearby Player With Server ID ${target}`);
+        $.post("http://disc-inventoryhud/GiveCash", JSON.stringify({
+            target: target,
+            item: 'cash',
+            count: count
+        }), function (status) {
+            if (status) {
+                $('.near-players-wrapper').fadeOut();
+            }
+        });
+    }
+});

@@ -1,10 +1,4 @@
 ESX = nil
-
-local dropSecondaryInventory = {
-    type = 'drop',
-    owner = 'x123y123z123'
-}
-
 Citizen.CreateThread(function()
     while ESX == nil do
         TriggerEvent('esx:getSharedObject', function(obj)
@@ -19,6 +13,16 @@ Citizen.CreateThread(function()
 
     ESX.PlayerData = ESX.GetPlayerData()
 end)
+
+RegisterNetEvent('esx:setJob')
+AddEventHandler('esx:setJob', function(job)
+    ESX.PlayerData.job = job
+end)
+
+local dropSecondaryInventory = {
+    type = 'drop',
+    owner = 'x123y123z123'
+}
 
 local isInInventory = false
 

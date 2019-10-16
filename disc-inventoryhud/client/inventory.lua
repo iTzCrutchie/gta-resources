@@ -25,13 +25,15 @@ RegisterNUICallback('SwapItems', function(data)
     TriggerEvent('disc-inventoryhud:SwapItems', data)
 end)
 
-RegisterNUICallback('GiveItem', function(data)
+RegisterNUICallback('GiveItem', function(data, cb)
     TriggerServerEvent('disc-inventoryhud:notifyImpendingRemoval', data.item, data.number)
     TriggerServerEvent('disc-inventoryhud:GiveItem', data)
+    cb('OK')
 end)
 
-RegisterNUICallback('GiveCash', function(data)
+RegisterNUICallback('GiveCash', function(data, cb)
     TriggerServerEvent('disc-inventoryhud:GiveCash', data)
+    cb('OK')
 end)
 
 RegisterNUICallback('GetNearPlayers', function(data)
@@ -62,7 +64,7 @@ function GetNeareastPlayers()
     for i = 1, #players, 1 do
         if players[i] ~= PlayerId() then
             found_players = true
-            table.insert(players_clean, { label = GetPlayerName(players[i]), player = GetPlayerServerId(players[i]) })
+            table.insert(players_clean, { name = GetPlayerName(players[i]), id = GetPlayerServerId(players[i]) })
         end
     end
     return players_clean

@@ -106,7 +106,7 @@ AddEventHandler("disc-inventoryhud:SwapItems", function(data)
 
     if data.originOwner == data.destinationOwner then
         local originInvHandler = InvType[data.originTier.name]
-        originInvHandler.getInventory(data.originOwner, data.originTier.name, function(inventory)
+        originInvHandler.getInventory(data.originOwner, function(inventory)
             local tempItem = inventory[tostring(data.originSlot)]
             inventory[tostring(data.originSlot)] = inventory[tostring(data.destinationSlot)]
             inventory[tostring(data.destinationSlot)] = tempItem
@@ -327,23 +327,23 @@ end)
 
 RegisterServerEvent("disc-inventoryhud:GiveItem")
 AddEventHandler("disc-inventoryhud:GiveItem", function(data)
-    local targetPlayer = ESX.GetPlayerFromId(data.player)
-    targetPlayer.addInventoryItem(data.item.id, data.number)
+    local targetPlayer = ESX.GetPlayerFromId(data.target)
+    targetPlayer.addInventoryItem(data.item.id, data.count)
     local sourcePlayer = ESX.GetPlayerFromId(source)
-    sourcePlayer.removeInventoryItem(data.item.id, data.number)
+    sourcePlayer.removeInventoryItem(data.item.id, data.count)
     TriggerClientEvent('disc-inventoryhud:refreshInventory', source)
-    TriggerClientEvent('disc-inventoryhud:refreshInventory', data.player)
+    TriggerClientEvent('disc-inventoryhud:refreshInventory', data.target)
 end)
 
 RegisterServerEvent("disc-inventoryhud:GiveCash")
 AddEventHandler("disc-inventoryhud:GiveCash", function(data)
     local sourcePlayer = ESX.GetPlayerFromId(source)
-    if sourcePlayer.getMoney() >= data.number then
-        sourcePlayer.removeMoney(data.number)
-        local targetPlayer = ESX.GetPlayerFromId(data.player)
-        targetPlayer.addMoney(data.number)
+    if sourcePlayer.getMoney() >= data.count then
+        sourcePlayer.removeMoney(data.count)
+        local targetPlayer = ESX.GetPlayerFromId(data.target)
+        targetPlayer.addMoney(data.count)
         TriggerClientEvent('disc-inventoryhud:refreshInventory', source)
-        TriggerClientEvent('disc-inventoryhud:refreshInventory', data.player)
+        TriggerClientEvent('disc-inventoryhud:refreshInventory', data.target)
     end
 end)
 
@@ -449,6 +449,8 @@ function createDisplayItem(item, esxItem, slot, price, type)
         stackable = true,
         unique = esxItem.rare,
         usable = esxItem.usable,
+        description = getItemDataProperty(esxItem.name, 'description'),
+        weight = getItemDataProperty(esxItem.name, 'weight'),
         metadata = {},
         staticMeta = {},
         canRemove = esxItem.canRemove,

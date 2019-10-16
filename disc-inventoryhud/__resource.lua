@@ -11,6 +11,8 @@ client_scripts {
     'client/glovebox.lua',
     'client/shop.lua',
     'client/weapons.lua',
+    'client/search.lua',
+    'client/stash.lua',
     'common/drop.lua',
     'config.lua',
     'utils.lua'
@@ -27,6 +29,9 @@ server_scripts {
     'server/glovebox.lua',
     'server/shop.lua',
     'server/weapons.lua',
+    'server/search.lua',
+    'server/stash.lua',
+    'server/itemdata.lua',
     'common/drop.lua',
     'config.lua',
     'utils.lua'

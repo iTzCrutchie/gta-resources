@@ -25,7 +25,7 @@
                     <div id="player-inv-id" class="inv-id">inv-000</div>
                 </div>
                 <div id="inventoryOne">
-                    
+
                 </div>
             </div>
             <div id="controls">
@@ -35,14 +35,15 @@
                 </div>
                 <div class="controls-div">
                     <input type="number" class="control" id="count" value="0" onClick="this.select();">
-                    <div class="control" id="use"></div>
-                    <div class="control" id="give"></div>
-                    <div class="control" id="pay"></div>
+                    <div class="control" id="use">Use</div>
+                    <div class="control" id="give">Give</div>
+                    <div class="control" id="pay">Pay</div>
                 </div>
                 <div class="tooltip-div">
                     <div class="tooltip-name"></div>
                     <div class="tooltip-uniqueness"></div>
                     <hr />
+                    <div class="tooltip-desc"></div>
                     <div class="tooltip-meta"></div>
                 </div>
             </div>
@@ -65,8 +66,12 @@
         <div class="slot slot-template"><div class="item"><div class="item-count"></div><div class="item-price"></div><div class="item-name"></div></div></div>
     </div>
 
-    <div id="dialog">
-        <div id="nearPlayers"></div>
+    <div class="near-players-wrapper">
+        <div class="near-players-list">
+            <div class="popup-header"><div class="popup-header-text">Nearby Players</div><div class="exit-popup">X</div></div>
+            <div class="popup-body">
+            </div>
+        </div>
     </div>
     <script src="./js/jquery.min.js" type="text/javascript"></script>
     <script src="./js/jquery-ui.min.js" type="text/javascript"></script>
@@ -75,21 +80,4 @@
     <script src="./js/config.js" type="text/javascript"></script>
     <script src="./js/inventory.js" type="text/javascript"></script>
 </body>
-
-<script>
-    $(document).ready(function () {
-        $("#use").html("Use");
-        $("#give").html("Give");
-        //$("#drop").html("Drop");
-        $("#pay").html("Pay");
-    });
-</script>
-<script>
-	$(function () {
-		$("#dialog").dialog({
-			autoOpen: false,
-			clickOutside: true
-		});
-	});
-</script>
 </html>

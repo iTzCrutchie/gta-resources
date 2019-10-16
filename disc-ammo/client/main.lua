@@ -40,9 +40,9 @@ AddEventHandler('disc-ammo:useAmmoItem', function(ammo)
                 end
                 SetPedAmmo(playerPed, weapon, newAmmo)
                 TriggerServerEvent('disc-ammo:removeAmmoItem', ammo)
-                exports['mythic_notify']:DoHudText('success', 'Reloaded')
+                exports['mythic_notify']:SendAlert('success', 'Reloaded')
             else
-                exports['mythic_notify']:DoHudText('error', 'Max Ammo')
+                exports['mythic_notify']:SendAlert('error', 'Max Ammo')
             end
         end
     end

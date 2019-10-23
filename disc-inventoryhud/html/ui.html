@@ -32,12 +32,15 @@
                 <div class="info-div">
                     <div class="money" id="bank"></div>
                     <div class="money" id="cash"></div>
+                    <div class="money" id="black_money"></div>
                 </div>
                 <div class="controls-div">
                     <input type="number" class="control" id="count" value="0" onClick="this.select();">
                     <div class="control" id="use">Use</div>
                     <div class="control" id="give">Give</div>
                     <div class="control" id="pay">Pay</div>
+                    <div class="control hidden" id="seize">Seize Cash</div>
+                    <div class="control hidden" id="steal">Steal Cash</div>
                 </div>
                 <div class="tooltip-div">
                     <div class="tooltip-name"></div>
@@ -73,6 +76,10 @@
             </div>
         </div>
     </div>
+
+    <div id="use-alert"></div>
+    <div id="action-bar"></div>
+
     <script src="./js/jquery.min.js" type="text/javascript"></script>
     <script src="./js/jquery-ui.min.js" type="text/javascript"></script>
     <script src="./js/popper.min.js" type="text/javascript"></script>

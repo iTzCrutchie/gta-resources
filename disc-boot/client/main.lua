@@ -23,11 +23,11 @@ function GetInBoot()
         return
     end
     if Config.MustHaveBoot and not DoesVehicleHaveDoor(vehicle, 5) then
-        exports['mythic_notify']:DoHudText('error', 'This car does not have a boot')
+        exports['mythic_notify']:SendALert('error', 'This car does not have a boot')
         return
     end
     if IsBigVehicle(vehicle) then
-        exports['mythic_notify']:DoHudText('error', 'NO')
+        exports['mythic_notify']:SendAlert('error', 'NO')
         return
     end
 
@@ -50,7 +50,7 @@ end
 
 function GetOutOfBoot()
     if not IsInBoot then
-        exports['mythic_notify']:DoHudText('error', 'You are not in a boot')
+        exports['mythic_notify']:SendAlert('error', 'You are not in a boot')
         return
     end
     if DoesEntityExist(InVehicle) then

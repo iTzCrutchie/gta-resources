@@ -69,7 +69,7 @@ AddEventHandler('disc-panic:addPanic', function(coords)
     }
     TriggerEvent('disc-base:updateBlip', blip, true)
     SetNewWaypoint(coords.x, coords.y)
-    exports['mythic_notify']:DoHudText('error', 'Panic Button has been Triggered!')
+    exports['mythic_notify']:SendAlert('error', 'Panic Button has been Triggered!')
     for i = 1, 7, 1 do
         PlaySoundFrontend(GetSoundId(), "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", 1)
         Citizen.Wait(200)

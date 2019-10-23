@@ -43,18 +43,18 @@ function RunRepair(marker)
     local veh = GetVehiclePedIsIn(PlayerPedId())
 
     if veh == 0 then
-        exports['mythic_notify']:DoHudText('error', 'You must be in a Vehicle!')
+        exports['mythic_notify']:SendAlert('error', 'You must be in a Vehicle!')
         return
     end
 
     if not IsVehicleDamaged(veh) then
-        exports['mythic_notify']:DoHudText('inform', 'Vehicle is in good condition!')
+        exports['mythic_notify']:SendAlert('inform', 'Vehicle is in good condition!')
         return
     end
 
     ESX.TriggerServerCallback('disc-autorepair:checkHasRepair', function(isCarRepairing)
         if isCarRepairing then
-            exports['mythic_notify']:DoHudText('error', 'You already have a Vehicle Repairing here!')
+            exports['mythic_notify']:SendAlert('error', 'You already have a Vehicle Repairing here!')
             return
         else
             local engineprice = Config.EnginePricePerHP * (1000 - math.max(GetVehicleEngineHealth(veh), 0))
@@ -63,9 +63,9 @@ function RunRepair(marker)
             ESX.TriggerServerCallback('disc-autorepair:takeMoney', function(took)
                 if took then
                     StartRepair(place)
-                    exports['mythic_notify']:DoHudText('success', 'Starting Vehicle Repair for $' .. price .. '!')
+                    exports['mythic_notify']:SendAlert('success', 'Starting Vehicle Repair for $' .. price .. '!')
                 else
-                    exports['mythic_notify']:DoHudText('error', 'No funds! You need $' .. price .. '!')
+                    exports['mythic_notify']:SendAlert('error', 'No funds! You need $' .. price .. '!')
                 end
             end, price)
         end

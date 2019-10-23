@@ -46,7 +46,7 @@ function ChangeToClothes(clothes, label)
         end)
     end)
     ESX.UI.Menu.CloseAll()
-    exports['mythic_notify']:DoHudText('success', 'Change to Clothes: ' .. label)
+    exports['mythic_notify']:SendAlert('success', 'Change to Clothes: ' .. label)
 end
 
 function ShowSaveClothes()
@@ -61,7 +61,7 @@ end
 function SaveClothes(value)
     TriggerEvent('skinchanger:getSkin', function(skin)
         TriggerServerEvent('esx_clotheshop:saveOutfit', value, skin)
-        exports['mythic_notify']:DoHudText('success', 'Saved Clothes: ' .. value)
+        exports['mythic_notify']:SendAlert('success', 'Saved Clothes: ' .. value)
         ESX.UI.Menu.CloseAll()
     end)
 end
@@ -89,7 +89,7 @@ end
 
 function RemoveClothes(label)
     TriggerServerEvent('disc-property:removeOutfit', label)
-    exports['mythic_notify']:DoHudText('success', 'Removed Clothes: ' .. label)
+    exports['mythic_notify']:SendALert('success', 'Removed Clothes: ' .. label)
     ESX.UI.Menu.CloseAll()
 end
 

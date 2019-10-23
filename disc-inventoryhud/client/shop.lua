@@ -20,7 +20,9 @@ Citizen.CreateThread(function()
 end)
 
 Citizen.CreateThread(function()
-    Citizen.Wait(0)
+    while ESX == nil or ESX.PlayerData == nil or ESX.PlayerData.job == nil do
+        Citizen.Wait(10)
+    end
     for k, v in pairs(Config.Shops) do
         for val, coords in pairs(v.coords) do
             local marker = {
@@ -28,7 +30,7 @@ Citizen.CreateThread(function()
                 coords = coords,
                 type = v.markerType or 1,
                 colour = v.markerColour or { r = 55, b = 255, g = 55 },
-                size = v.size or vector3(0.5, 0.5, 1.0),
+                size = v.size or vector3(1.0, 1.0, 1.0),
                 action = function()
                     shopSecondaryInventory.owner = k
                     openInventory(shopSecondaryInventory)

@@ -97,16 +97,16 @@ function takeOutWeapon(weapon)
     local playerPed = GetPlayerPed(-1)
 
     if doesPedHaveWeapon(playerPed, weapon) then
-        exports['mythic_notify']:DoHudText('success', 'You already have a ' .. ESX.GetWeaponLabel(weapon))
+        exports['mythic_notify']:SendAlert('success', 'You already have a ' .. ESX.GetWeaponLabel(weapon))
     else
         ESX.TriggerServerCallback('disc-armory:modifyWeaponCount',
                 function(result)
                     if result then
-                        exports['mythic_notify']:DoHudText('success', 'Took Weapon ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('success', 'Took Weapon ' .. ESX.GetWeaponLabel(weapon))
                         TriggerEvent('esx:addWeapon', weapon, 200)
                         ESX.UI.Menu.Close('default', 'disc-base', 'take_weapons')
                     else
-                        exports['mythic_notify']:DoHudText('error', 'Unable to take Weapon ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('error', 'Unable to take Weapon ' .. ESX.GetWeaponLabel(weapon))
                     end
                 end, currentArmory.job, weapon, -1)
     end
@@ -116,11 +116,11 @@ function putWeapon(weapon)
     ESX.TriggerServerCallback('disc-armory:modifyWeaponCount',
             function(result)
                 if result then
-                    exports['mythic_notify']:DoHudText('success', 'Stored Weapon ' .. ESX.GetWeaponLabel(weapon))
+                    exports['mythic_notify']:SendAlert('success', 'Stored Weapon ' .. ESX.GetWeaponLabel(weapon))
                     TriggerEvent('esx:removeWeapon', weapon)
                     ESX.UI.Menu.Close('default', 'disc-base', 'store_weapons')
                 else
-                    exports['mythic_notify']:DoHudText('error', 'Failed to store Weapon ' .. ESX.GetWeaponLabel(weapon))
+                    exports['mythic_notify']:SendAlert('error', 'Failed to store Weapon ' .. ESX.GetWeaponLabel(weapon))
                 end
             end, currentArmory.job, weapon, 1)
 end
@@ -128,18 +128,18 @@ end
 function buyWeapon(weapon, price)
     local playerPed = GetPlayerPed(-1)
     if doesPedHaveWeapon(playerPed, weapon) then
-        exports['mythic_notify']:DoHudText('success', 'You already have a ' .. ESX.GetWeaponLabel(weapon))
+        exports['mythic_notify']:SendAlert('success', 'You already have a ' .. ESX.GetWeaponLabel(weapon))
     else
         ESX.TriggerServerCallback('disc-base:buy',
                 function(bought)
                     if bought == 1 then
                         TriggerEvent('esx:addWeapon', weapon, 200)
-                        exports['mythic_notify']:DoHudText('success', 'You bought a ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('success', 'You bought a ' .. ESX.GetWeaponLabel(weapon))
                         ESX.UI.Menu.Close('default', 'disc-base', 'buy_weapons')
                     elseif bought == 0 then
-                        exports['mythic_notify']:DoHudText('error', 'You need $' .. price .. ' to buy a ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('error', 'You need $' .. price .. ' to buy a ' .. ESX.GetWeaponLabel(weapon))
                     else
-                        exports['mythic_notify']:DoHudText('error', 'Unable to buy Weapon ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('error', 'Unable to buy Weapon ' .. ESX.GetWeaponLabel(weapon))
                     end
                 end, price)
     end

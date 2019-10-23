@@ -68,7 +68,7 @@ function ShowCars(garage)
     ESX.TriggerServerCallback('disc-jobcars:getJobCars', function(foundCars)
         local cars = {}
         if #foundCars == 0 then
-            exports['mythic_notify']:DoHudText('inform', 'No vehicle to spawn')
+            exports['mythic_notify']:SendAlert('inform', 'No vehicle to spawn')
             return
         end
         for k, v in pairs(foundCars) do
@@ -103,7 +103,7 @@ end
 
 function SpawnCar(garage, props)
     local playerPed = PlayerPedId()
-    exports['mythic_notify']:DoHudText('success', 'Spawned Vehicle')
+    exports['mythic_notify']:SendAlert('success', 'Spawned Vehicle')
     ESX.Game.SpawnVehicle(props.model, garage.coords, garage.heading, function(vehicle)
         ESX.Game.SetVehicleProperties(vehicle, props)
         TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
@@ -113,12 +113,12 @@ function SpawnCar(garage, props)
 end
 
 function CannotSpawnCar()
-    exports['mythic_notify']:DoHudText('error', 'Vehicle is Out')
+    exports['mythic_notify']:SendAlert('error', 'Vehicle is Out')
 end
 
 function ShowBuyCars(garage)
     if not garage.cars[ESX.PlayerData.job.grade_name] or #garage.cars[ESX.PlayerData.job.grade_name] == 0 then
-        exports['mythic_notify']:DoHudText('inform', 'No vehicle to buy for ' .. ESX.PlayerData.job.grade_name)
+        exports['mythic_notify']:SendAlert('inform', 'No vehicle to buy for ' .. ESX.PlayerData.job.grade_name)
         return
     end
     local cars = {}
@@ -164,7 +164,7 @@ end
 function BuyCar(car, garage)
     ESX.TriggerServerCallback('disc-jobcars:canBuyCar', function(canbuy)
         if canbuy == 1 then
-            exports['mythic_notify']:DoHudText('success', 'Bought Vehicle')
+            exports['mythic_notify']:SendAlert('success', 'Bought Vehicle')
 
             ESX.Game.SpawnLocalVehicle(car.model, garage.shopCoords, 0.0, function(vehicle)
                 SetEntityCollision(vehicle, false, true)
@@ -179,9 +179,9 @@ function BuyCar(car, garage)
             end)
             ESX.UI.Menu.CloseAll()
         elseif canbuy == 0 then
-            exports['mythic_notify']:DoHudText('error', 'Not Enough Money')
+            exports['mythic_notify']:SendAlert('error', 'Not Enough Money')
         else
-            exports['mythic_notify']:DoHudText('error', 'Failed to Buy')
+            exports['mythic_notify']:SendAlert('error', 'Failed to Buy')
         end
     end, car)
 end
@@ -200,7 +200,7 @@ function StoreCar()
             end
         end
     else
-        exports['mythic_notify']:DoHudText('error', 'No Vehicle Found')
+        exports['mythic_notify']:SendAlert('error', 'No Vehicle Found')
         return
     end
     ESX.TriggerServerCallback('disc-jobcars:storeNearbyJobCar', function(storeSuccess, foundNum)
@@ -232,9 +232,9 @@ function StoreCar()
             end
 
             IsBusy = false
-            exports['mythic_notify']:DoHudText('success', 'Stored Vehicle')
+            exports['mythic_notify']:SendAlert('success', 'Stored Vehicle')
         else
-            exports['mythic_notify']:DoHudText('error', 'Failed to Store Vehicle')
+            exports['mythic_notify']:SendAlert('error', 'Failed to Store Vehicle')
         end
     end, vehiclePlates)
 
@@ -244,7 +244,7 @@ function ShowClaimCars(garage)
     ESX.TriggerServerCallback('disc-jobcars:getClaimableCars', function(foundCars)
         local cars = {}
         if #foundCars == 0 then
-            exports['mythic_notify']:DoHudText('inform', 'No vehicle to claim')
+            exports['mythic_notify']:SendAlert('inform', 'No vehicle to claim')
             return
         end
         for k, v in pairs(foundCars) do
@@ -269,7 +269,7 @@ function ShowClaimCars(garage)
 end
 
 function ClaimCar(plate)
-    exports['mythic_notify']:DoHudText('Success', 'Claimed Vehicle for $' .. Config.ClaimPrice)
+    exports['mythic_notify']:SendAlert('Success', 'Claimed Vehicle for $' .. Config.ClaimPrice)
     ESX.UI.Menu.Close('default', 'disc-base', 'garage_claim')
     TriggerServerEvent('disc-jobcars:payClaim')
     TriggerServerEvent('disc-jobcars:storeCar', plate)

@@ -53,7 +53,7 @@ end)
 function SpawnCar()
     ESX.TriggerServerCallback('disc-carthief:isActive', function(isActive, isCooldownActive)
         if isCooldownActive == 1 then
-            exports['mythic_notify']:DoHudText('error', "Cooldown is active!")
+            exports['mythic_notify']:SendAlert('error', "Cooldown is active!")
         elseif isActive == 0 then
             ESX.TriggerServerCallback('disc-carthief:anycops', function(anycops)
                 if anycops >= Config.CopsRequired then
@@ -108,11 +108,11 @@ function SpawnCar()
                     --For delivery blip
                     isDelivered = 0
                 else
-                    exports['mythic_notify']:DoHudText('error', "Not enough cops in town!")
+                    exports['mythic_notify']:SendAlert('error', "Not enough cops in town!")
                 end
             end)
         else
-            exports['mythic_notify']:DoHudText('error', "There is already a car robbery in progress!")
+            exports['mythic_notify']:SendAlert('error', "There is already a car robbery in progress!")
         end
     end)
 end
@@ -132,7 +132,7 @@ function FinishDelivery()
         --Pay the poor fella
         local finalpayment = math.floor(alldeliveries[randomdelivery].payment * EngineDamageFactor * BodyDamageFactor)
 
-        exports['mythic_notify']:DoHudText('success', "You finished the robbery, Here is your payment! You earned $" .. finalpayment)
+        exports['mythic_notify']:SendAlert('success', "You finished the robbery, Here is your payment! You earned $" .. finalpayment)
 
         TriggerServerEvent('disc-carthief:pay', finalpayment)
 
@@ -152,7 +152,7 @@ function FinishDelivery()
         TriggerServerEvent('disc-carthief:stopalertcops')
 
     else
-        exports['mythic_notify']:DoHudText('error', "You have to use the car that was provided for you and you must come to a full stop.")
+        exports['mythic_notify']:SendAlert('error', "You have to use the car that was provided for you and you must come to a full stop.")
     end
 end
 
@@ -160,7 +160,7 @@ function AbortDelivery()
 
     if isTaken == 1 and isDelivered == 0 then
 
-        exports['mythic_notify']:DoHudText('error', "Mission failed!")
+        exports['mythic_notify']:SendAlert('error', "Mission failed!")
 
         --Delete Car
         SetEntityAsNoLongerNeeded(car)
@@ -189,11 +189,11 @@ end
 function Buy()
     ESX.TriggerServerCallback('disc-carthief:buyJammer', function(bought)
         if bought == 1 then
-            exports['mythic_notify']:DoHudText('inform', "You bought a Jammer!")
+            exports['mythic_notify']:SendAlert('inform', "You bought a Jammer!")
         elseif bought == -1 then
-            exports['mythic_notify']:DoHudText('error', "You need $" .. Config.JammerPrice .. " (Dirty) to buy a jammer")
+            exports['mythic_notify']:SendAlert('error', "You need $" .. Config.JammerPrice .. " (Dirty) to buy a jammer")
         elseif bought == 0 then
-            exports['mythic_notify']:DoHudText('error', "You already have a jammer!")
+            exports['mythic_notify']:SendAlert('error', "You already have a jammer!")
         end
     end)
 end
@@ -202,7 +202,7 @@ RegisterNetEvent('disc-carthief:jammerActive')
 AddEventHandler('disc-carthief:jammerActive', function()
     if isTaken == 1 and isDelivered == 0 and (GetVehiclePedIsIn(GetPlayerPed(-1), false) == car) then
         isJammerActive = 1
-        exports['mythic_notify']:DoHudText('inform', "Activating Jammer!")
+        exports['mythic_notify']:SendAlert('inform', "Activating Jammer!")
         TriggerServerEvent('disc-carthief:removeJammer')
     end
 end)
@@ -212,10 +212,10 @@ Citizen.CreateThread(function()
     while true do
         Wait(1000)
         if isTaken == 1 and isDelivered == 0 and not (GetVehiclePedIsIn(GetPlayerPed(-1), false) == car) then
-            exports['mythic_notify']:DoHudText('error', "You have 1 minute to get back in the car")
+            exports['mythic_notify']:SendAlert('error', "You have 1 minute to get back in the car")
             Wait(50000)
             if isTaken == 1 and isDelivered == 0 and not (GetVehiclePedIsIn(GetPlayerPed(-1), false) == car) then
-                exports['mythic_notify']:DoHudText('error', "You have 10 seconds to get back in the car")
+                exports['mythic_notify']:SendAlert('error', "You have 10 seconds to get back in the car")
                 Wait(10000)
                 AbortDelivery()
             end
@@ -277,7 +277,7 @@ end)
 
 RegisterNetEvent('disc-carthief:activatedJammerCops')
 AddEventHandler('disc-carthief:activatedJammerCops', function()
-    exports['mythic_notify']:DoHudText('error', "Criminals have activated their signal jammer! Beware!")
+    exports['mythic_notify']:SendAlert('error', "Criminals have activated their signal jammer! Beware!")
 end)
 
 RegisterNetEvent('disc-carthief:setcopblip')
@@ -292,7 +292,7 @@ end)
 
 RegisterNetEvent('disc-carthief:setcopnotification')
 AddEventHandler('disc-carthief:setcopnotification', function()
-    exports['mythic_notify']:DoHudText('inform', "Car stealing in progress. Vehicle tracker will be active on your radar")
+    exports['mythic_notify']:SendAlert('inform', "Car stealing in progress. Vehicle tracker will be active on your radar")
 end)
 
 AddEventHandler('disc-carthief:hasEnteredMarker', function(zone)

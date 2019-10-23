@@ -56,11 +56,11 @@ end)
 Citizen.CreateThread(function()
 
     while true do
-        Citizen.Wait(0)
+        Citizen.Wait(1)
         local playerPed = PlayerPedId()
         local coords = GetEntityCoords(playerPed)
         local isInMarker = false
-        local lastMarker = nil
+        local lastMarker
         for k, v in pairs(markers) do
             local distance = GetDistanceBetweenCoords(coords.x, coords.y, coords.z, v.coords.x, v.coords.y, v.coords.z, true)
             if distance < Config.DrawDistance and v.shouldDraw() then
@@ -71,13 +71,13 @@ Citizen.CreateThread(function()
                 elseif v.type ~= -1 then
                     DrawMarker(v.type, v.coords, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, v.size.x, v.size.y, v.size.z, v.colour.r, v.colour.g, v.colour.b, 100, getOrElse(v.bob, false), true, 2, getOrElse(v.rotate, true), false, false, false)
                 end
-            end
-            if distance < v.size.x and v.shouldDraw() then
-                if v.enableE then
-                    EnableControlAction(0, 38)
+                if distance < v.size.x then
+                    if v.enableE then
+                        EnableControlAction(0, 38)
+                    end
+                    isInMarker = true
+                    lastMarker = v
                 end
-                isInMarker = true
-                lastMarker = v
             end
         end
 

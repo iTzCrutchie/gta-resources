@@ -8,7 +8,7 @@ function OpenGarage(property)
             if IsPedInAnyVehicle(playerPed) then
                 StoreVehicle(GetVehiclePedIsIn(playerPed), property.name)
             else
-                exports['mythic_notify']:DoHudText('error', 'No vehicle to store')
+                exports['mythic_notify']:SendAlert('error', 'No vehicle to store')
             end
             ESX.UI.Menu.CloseAll()
         end },
@@ -36,7 +36,7 @@ function OpenGarage(property)
                     TriggerEvent('disc-base:openMenu', menu)
                 end, property.name)
             else
-                exports['mythic_notify']:DoHudText('error', 'No space to spawn!')
+                exports['mythic_notify']:SendAlert('error', 'No space to spawn!')
             end
         end },
     }
@@ -58,11 +58,11 @@ function StoreVehicle(vehicle, propertyName)
             local vehicleName = GetLabelText(GetDisplayNameFromVehicleModel(props.model))
             local label = ('%s - <span style="color:blue;">%s</span>'):format(vehicleName, props.plate)
             ESX.Game.DeleteVehicle(vehicle)
-            exports['mythic_notify']:DoHudText('success', 'Storing ' .. label)
+            exports['mythic_notify']:SendAlert('success', 'Storing ' .. label)
         elseif stored == 'notowned' then
-            exports['mythic_notify']:DoHudText('error', 'You do not own this vehicle')
+            exports['mythic_notify']:SendAlert('error', 'You do not own this vehicle')
         elseif stored == 'max' then
-            exports['mythic_notify']:DoHudText('error', 'You have exceeded garage capacity')
+            exports['mythic_notify']:SendAlert('error', 'You have exceeded garage capacity')
         end
         busy = false
     end, propertyName, props)
@@ -78,7 +78,7 @@ function SpawnVehicle(garageCoords, heading, props)
             ESX.Game.SpawnVehicle(props.model, garageCoords, heading, function(vehicle)
                 ESX.Game.SetVehicleProperties(vehicle, props)
                 TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
-                exports['mythic_notify']:DoHudText('success', 'Spawned ' .. label)
+                exports['mythic_notify']:SendAlert('success', 'Spawned ' .. label)
                 busy = false
             end)
         end

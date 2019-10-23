@@ -1,11 +1,18 @@
 local secondarySearchInventory = {
     type = 'player',
-    owner = ''
+    owner = '',
+    seize = true
 }
+local secondaryStealInventory = {
+    type = 'player',
+    owner = '',
+    steal = true
+}
+
+
 
 RegisterNetEvent('disc-inventoryhud:search')
 AddEventHandler('disc-inventoryhud:search', function()
-    print('Searching')
     local player = ESX.GetPlayerData()
     if player.job.name == 'police' then
         local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
@@ -28,9 +35,16 @@ AddEventHandler('disc-inventoryhud:steal', function()
         local searchPlayerPed = GetPlayerPed(closestPlayer)
         if IsEntityPlayingAnim(searchPlayerPed, 'random@mugging3', 'handsup_standing_base', 3) then
             ESX.TriggerServerCallback('disc-inventoryhud:getIdentifier', function(identifier)
-                secondarySearchInventory.owner = identifier
-                openInventory(secondarySearchInventory)
+                secondaryStealInventory.owner = identifier
+                openInventory(secondaryStealInventory)
             end, GetPlayerServerId(closestPlayer))
         end
     end
+end)
+
+RegisterNUICallback('StealCash', function(data)
+    TriggerServerEvent('disc-inventoryhud:StealCash', data)
+end)
+RegisterNUICallback('SeizeCash', function(data)
+    TriggerServerEvent('disc-inventoryhud:SeizeCash', data)
 end)

@@ -1,13 +1,16 @@
 var type = "normal";
 var firstTier = 1;
 var firstUsed = 0;
-var firstItems = new Array();
+var firstItems = [];
 var secondTier = 1;
 var secondUsed = 0;
-var secondItems = new Array();
+var secondItems = [];
 var errorHighlightTimer = null;
+var originOwner = false;
+var destinationOwner = false;
+var locked = false
 
-var dragging = false
+var dragging = false;
 var origDrag = null;
 var draggingItem = null;
 var givingItem = null;
@@ -37,6 +40,8 @@ window.addEventListener("message", function (event) {
         } else if (type === "secondary") {
             $('#inventoryTwo').parent().show();
         }
+        $('#seize').addClass('hidden');
+        $('#steal').addClass('hidden');
 
         $(".ui").fadeIn();
     } else if (event.data.action == "hide") {
@@ -44,9 +49,11 @@ window.addEventListener("message", function (event) {
         $(".ui").fadeOut();
     } else if (event.data.action == "setItems") {
         firstTier = event.data.invTier;
+        originOwner = event.data.invOwner;
         inventorySetup(event.data.invOwner, event.data.itemList, event.data.money, event.data.invTier);
     } else if (event.data.action == "setSecondInventoryItems") {
         secondTier = event.data.invTier;
+        destinationOwner = event.data.invOwner;
         secondInventorySetup(event.data.invOwner, event.data.itemList, event.data.invTier);
     } else if (event.data.action == "setInfoText") {
         $(".info-div").html(event.data.text);
@@ -59,7 +66,22 @@ window.addEventListener("message", function (event) {
         });
         $('.near-players-wrapper').fadeIn();
         EndDragging();
+    } else if (event.data.action == 'showSeize') {
+        $('#seize').removeClass('hidden')
+    } else if (event.data.action == 'showSteal') {
+        $('#steal').removeClass('hidden')
+    } else if (event.data.action == 'itemUsed') {
+        ItemUsed(event.data.alerts);
+    } else if (event.data.action == 'showActionBar') {
+        ActionBar(event.data.items);
+    } else if (event.data.action == 'actionbarUsed') {
+        ActionBarUsed(event.data.index);
+    } else if (event.data.action == 'unlock') {
+        UnlockInventory()
+    } else if (event.data.action == 'lock') {
+        LockInventory()
     }
+
 });
 
 function formatCurrency(x) {
@@ -92,6 +114,7 @@ function inventorySetup(invOwner, items, money, invTier) {
 
     $('#cash').html('<img src="img/cash.png" class="moneyIcon"> $' + formatCurrency(money.cash));
     $('#bank').html('<img src="img/bank.png" class="moneyIcon"> $' + formatCurrency(money.bank));
+    $('#black_money').html('<img src="img/black_money.png" class="moneyIcon"> $' + formatCurrency(money.black_money));
 
     firstUsed = 0;
     $.each(items, function (index, item) {
@@ -144,7 +167,6 @@ function setupPlayerSlots() {
         $('#inventoryOne').find('.slot-template').data('inventory', 'inventoryOne');
         $('#inventoryOne').find('.slot-template').removeClass('slot-template');
     }
-    ;
 }
 
 function setupSecondarySlots(owner) {
@@ -200,12 +222,14 @@ $(document).ready(function () {
     $('#inventoryTwo').parent().hide();
 
     $('#inventoryOne, #inventoryTwo').on('click', '.slot', function (e) {
+        if (locked) {
+            return
+        }
+
         itemData = $(this).find('.item').data('item');
         if (itemData == null && !dragging) {
             return
         }
-        ;
-
         if (dragging) {
             if ($(this).data('slot') !== undefined && $(origDrag).data('slot') !== $(this).data('slot') || $(this).data('slot') !== undefined && $(origDrag).data('invOwner') !== $(this).parent().data('invOwner')) {
                 if ($(this).find('.item').data('item') !== undefined) {
@@ -220,7 +244,7 @@ $(document).ready(function () {
         } else {
             if (itemData !== undefined) {
                 // Store a reference because JS is retarded
-                origDrag = $(this)
+                origDrag = $(this);
                 AddItemToSlot(origDrag, itemData);
                 $(origDrag).data('slot', $(this).data('slot'));
                 $(origDrag).data('invOwner', $(this).parent().data('invOwner'));
@@ -255,21 +279,21 @@ $(document).ready(function () {
 
     $('.close-ui').click(function (event, ui) {
         closeInventory();
-    })
+    });
 
     $('#use').click(function (event, ui) {
         if (dragging) {
             itemData = $(draggingItem).find('.item').data("item");
             if (itemData.usable) {
-                InventoryLog('Using ' + itemData.label);
+                InventoryLog('Using ' + itemData.label + ' and Close ' + itemData.closeUi);
                 $.post("http://disc-inventoryhud/UseItem", JSON.stringify({
                     owner: $(draggingItem).parent().data('invOwner'),
+                    slot: $(draggingItem).data('slot'),
                     item: itemData
-                }), function (closeUi) {
-                    if (closeUi) {
-                        closeInventory();
-                    }
-                });
+                }));
+                if (itemData.closeUi) {
+                    closeInventory();
+                }
                 successAudio.play();
             } else {
                 failAudio.play();
@@ -315,19 +339,45 @@ $(document).ready(function () {
         $(this).removeClass('hover');
     });
 
-    let pay = $("#pay");
-    pay.mouseenter(function () {
+    $("#pay").mouseenter(function () {
         if (!$(this).hasClass('disabled')) {
             $(this).addClass('hover');
         }
     }).mouseleave(function () {
         $(this).removeClass('hover');
+    }).click(function (event, ui) {
+        successAudio.play();
+        $('.near-players-wrapper').find('.popup-body').html('');
+        $('.near-players-list .popup-body').append(`<div class="cashchoice" data-id="cash">Cash</div>`);
+        $('.near-players-list .popup-body').append(`<div class="cashchoice" data-id="black_money">Black Money</div>`);
+        $('.near-players-wrapper').fadeIn();
+        EndDragging();
     });
 
-    pay.click(function (event, ui) {
-        $.post("http://disc-inventoryhud/GetNearPlayers", JSON.stringify({
-            action: 'pay',
-            item: 'cash',
+    $("#seize").mouseenter(function () {
+        if (!$(this).hasClass('disabled')) {
+            $(this).addClass('hover');
+        }
+    }).mouseleave(function () {
+        $(this).removeClass('hover');
+    }).click(function (event, ui) {
+        InventoryLog('Seizing Cash from ' + destinationOwner);
+        $.post("http://disc-inventoryhud/SeizeCash", JSON.stringify({
+            target: destinationOwner
+        }));
+    });
+
+
+    $("#steal").mouseenter(function () {
+        if (!$(this).hasClass('disabled')) {
+            $(this).addClass('hover');
+        }
+    }).mouseleave(function () {
+        $(this).removeClass('hover');
+    }).click(function (event, ui) {
+        InventoryLog('Stealing Cash from ' + destinationOwner);
+        $.post("http://disc-inventoryhud/StealCash", JSON.stringify({
+            target: destinationOwner
         }));
     });
 
@@ -369,7 +419,7 @@ $(document).ready(function () {
 
             if (!itemData.unique) {
                 if (itemData.stackable) {
-                    $('.tooltip-div').find('.tooltip-uniqueness').html("Not Unique - Stack Max(" + itemData.max + ")");
+                    $('.tooltip-div').find('.tooltip-uniqueness').html("Not Unique - Stack Max (" + itemData.max + ")");
                 } else {
                     $('.tooltip-div').find('.tooltip-uniqueness').html("Not Unique - Not Stackable");
                 }
@@ -432,9 +482,16 @@ $(document).ready(function () {
         }
     });
 });
+$('.popup-body').on('click', '.cashchoice', function () {
+    $.post("http://disc-inventoryhud/GetNearPlayers", JSON.stringify({
+        action: 'pay',
+        item: 'cash',
+    }));
+});
+
 
 function AttemptDropInEmptySlot(origin, destination, moveQty) {
-    var result = ErrorCheck(origin, destination, moveQty)
+    var result = ErrorCheck(origin, destination, moveQty);
     if (result === -1) {
         $('.slot.error').removeClass('error');
         var item = origin.find('.item').data('item');
@@ -453,7 +510,7 @@ function AttemptDropInEmptySlot(origin, destination, moveQty) {
             AddItemToSlot(destination, item);
             successAudio.play();
 
-            InventoryLog('Moving ' + item.qty + ' ' + item.label + ' ' + ' From ' + origin.data('invOwner') + ' Slot ' + origin.data('slot') + ' To ' + destination.parent().data('invOwner') + ' Slot ' + item.slot);
+            InventoryLog('1Moving ' + item.qty + ' ' + item.label + ' ' + ' From ' + origin.data('invOwner') + ' Slot ' + origin.data('slot') + ' To ' + destination.parent().data('invOwner') + ' Slot ' + item.slot);
             $.post("http://disc-inventoryhud/MoveToEmpty", JSON.stringify({
                 originOwner: origin.parent().data('invOwner'),
                 originSlot: origin.data('slot'),
@@ -465,6 +522,7 @@ function AttemptDropInEmptySlot(origin, destination, moveQty) {
                 destinationTier: destination.parent().data('invTier'),
                 destinationItem: destination.find('.item').data('item'),
             }));
+            LockInventory();
         } else {
             var item2 = Object.create(item);
             item2.slot = destination.data('slot');
@@ -486,6 +544,7 @@ function AttemptDropInEmptySlot(origin, destination, moveQty) {
                 destinationItem: destination.find('.item').data('item'),
                 moveQty: moveQty,
             }));
+            LockInventory();
         }
     } else {
         failAudio.play();
@@ -538,9 +597,10 @@ function AttemptDropInOccupiedSlot(origin, destination, moveQty) {
                     destinationTier: destination.parent().data('invTier'),
                     moveQty: moveQty,
                 }));
+                LockInventory();
             } else {
                 if (destinationItem.qty === destinationItem.max) {
-                    destinationItem.slot = origin.data('slot')
+                    destinationItem.slot = origin.data('slot');
                     originItem.slot = destination.data('slot');
 
                     ResetSlotToEmpty(origin);
@@ -553,9 +613,14 @@ function AttemptDropInOccupiedSlot(origin, destination, moveQty) {
                     $.post("http://disc-inventoryhud/SwapItems", JSON.stringify({
                         originOwner: origin.parent().data('invOwner'),
                         originItem: origin.find('.item').data('item'),
+                        originSlot: origin.data('slot'),
+                        originTier: origin.parent().data('invTier'),
                         destinationOwner: destination.parent().data('invOwner'),
                         destinationItem: destination.find('.item').data('item'),
+                        destinationSlot: destination.data('slot'),
+                        destinationTier: destination.parent().data('invTier'),
                     }));
+                    LockInventory();
                 } else if (originItem.qty + destinationItem.qty <= destinationItem.max) {
                     ResetSlotToEmpty(origin);
                     destinationItem.qty += originItem.qty;
@@ -575,6 +640,7 @@ function AttemptDropInOccupiedSlot(origin, destination, moveQty) {
                         destinationTier: destination.parent().data('invTier'),
                         destinationItem: destinationItem,
                     }));
+                    LockInventory();
                 } else if (destinationItem.qty < destinationItem.max) {
                     var newOrigQty = destinationItem.max - destinationItem.qty;
                     originItem.qty -= newOrigQty;
@@ -595,13 +661,14 @@ function AttemptDropInOccupiedSlot(origin, destination, moveQty) {
                         destinationSlot: destinationItem.slot,
                         destinationTier: destination.parent().data('invTier'),
                     }));
+                    LockInventory();
                 } else {
                     DisplayMoveError(origin, destination, "Stack At Max Items");
                 }
             }
 
         } else {
-            destinationItem.slot = origin.data('slot')
+            destinationItem.slot = origin.data('slot');
             originItem.slot = destination.data('slot');
 
             ResetSlotToEmpty(origin);
@@ -622,6 +689,7 @@ function AttemptDropInOccupiedSlot(origin, destination, moveQty) {
                 destinationSlot: destination.data('slot'),
                 destinationTier: destination.parent().data('invTier'),
             }));
+            LockInventory();
         }
 
         let originInv = origin.parent().data('invOwner');
@@ -716,7 +784,7 @@ $('.popup-body').on('click', '.player', function () {
 
     let target = $(this).data('id');
     let action = $(this).data('action');
-    let count = parseInt($("#count").val())
+    let count = parseInt($("#count").val());
     if (action === "nearPlayersGive") {
 
         if (givingItem != null) {
@@ -753,3 +821,111 @@ $('.popup-body').on('click', '.player', function () {
         });
     }
 });
+
+var alertTimer = null;
+
+function ItemUsed(alerts) {
+    clearTimeout(alertTimer);
+    $('#use-alert').hide('slide', {direction: 'left'}, 500, function () {
+        $('#use-alert .slot').remove();
+
+        $.each(alerts, function (index, data) {
+            $('#use-alert').append(`<div class="slot alert-${index}""><div class="item"><div class="item-count">${data.qty}</div><div class="item-name">${data.item.label}</div></div><div class="alert-text">${data.message}</div></div>`)
+                .ready(function () {
+                    $(`.alert-${index}`).find('.item').css('background-image', 'url(\'img/items/' + data.item.itemId + '.png\')');
+                    if (data.item.slot <= 5) {
+                        $(`.alert-${index}`).find('.item').append(`<div class="item-keybind">${data.item.slot}</div>`)
+                    }
+                });
+        });
+    });
+
+    $('#use-alert').show('slide', {direction: 'left'}, 500, function () {
+        alertTimer = setTimeout(function () {
+            $('#use-alert .slot').addClass('expired');
+            $('#use-alert').hide('slide', {direction: 'left'}, 500, function () {
+                $('#use-alert .slot.expired').remove();
+            });
+        }, 2500);
+    });
+}
+
+var actionBarTimer = null;
+
+function ActionBar(items, timer) {
+    if ($('#action-bar').is(':visible')) {
+        clearTimeout(actionBarTimer);
+
+        for (let i = 0; i < 5; i++) {
+            $('#action-bar .slot').removeClass('expired');
+            if (items[i] != null) {
+                $(`.slot-${i}`).find('.item-count').html(items[i].qty);
+                $(`.slot-${i}`).find('.item-name').html(items[i].label);
+                $(`.slot-${i}`).find('.item-keybind').html(items[i].slot);
+                $(`.slot-${i}`).find('.item').css('background-image', 'url(\'img/items/' + items[i].itemId + '.png\')');
+            } else {
+                $(`.slot-${i}`).find('.item-count').html('');
+                $(`.slot-${i}`).find('.item-name').html('NONE');
+                $(`.slot-${i}`).find('.item-keybind').html(i + 1);
+                $(`.slot-${i}`).find('.item').css('background-image', 'none');
+            }
+
+            actionBarTimer = setTimeout(function () {
+                $('#action-bar .slot').addClass('expired');
+                $('#action-bar').hide('slide', {direction: 'down'}, 500, function () {
+                    $('#action-bar .slot.expired').remove();
+                });
+            }, timer == null ? 2500 : timer);
+        }
+    } else {
+        $('#action-bar').html('');
+        for (let i = 0; i < 5; i++) {
+            if (items[i] != null) {
+                $('#action-bar').append(`<div class="slot slot-${i}"><div class="item"><div class="item-count">${items[i].qty}</div><div class="item-name">${items[i].label}</div><div class="item-keybind">${items[i].slot}</div></div></div>`);
+                $(`.slot-${i}`).find('.item').css('background-image', 'url(\'img/items/' + items[i].itemId + '.png\')');
+            } else {
+                $('#action-bar').append(`<div class="slot slot-${i}" data-empty="true"><div class="item"><div class="item-count"></div><div class="item-name">NONE</div><div class="item-keybind">${i + 1}</div></div></div>`);
+                $(`.slot-${i}`).find('.item').css('background-image', 'none');
+            }
+        }
+
+        $('#action-bar').show('slide', {direction: 'down'}, 500, function () {
+            actionBarTimer = setTimeout(function () {
+                $('#action-bar .slot').addClass('expired');
+                $('#action-bar').hide('slide', {direction: 'down'}, 500, function () {
+                    $('#action-bar .slot.expired').remove();
+                });
+            }, timer == null ? 2500 : timer);
+        });
+    }
+}
+
+var usedActionTimer = null;
+
+function ActionBarUsed(index) {
+    clearTimeout(usedActionTimer);
+
+    if ($('#action-bar .slot').is(':visible')) {
+        if ($(`.slot-${index - 1}`).data('empty') != null) {
+            $(`.slot-${index - 1}`).addClass('empty-used');
+        } else {
+            $(`.slot-${index - 1}`).addClass('used');
+        }
+        usedActionTimer = setTimeout(function () {
+            $(`.slot-${index - 1}`).removeClass('used');
+            $(`.slot-${index - 1}`).removeClass('empty-used');
+        }, 1000)
+    }
+}
+
+function LockInventory() {
+    locked = true;
+    $('#inventoryOne').addClass('disabled');
+    $('#inventoryTwo').addClass('disabled');
+}
+
+function UnlockInventory() {
+    locked = false;
+    $('#inventoryOne').removeClass('disabled');
+    $('#inventoryTwo').removeClass('disabled');
+}

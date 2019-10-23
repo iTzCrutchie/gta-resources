@@ -46,7 +46,7 @@ function ShowBillName(id, society)
         action = function(value)
             ESX.UI.Menu.CloseAll()
             if value == nil or value == '' then
-                exports['mythic_notify']:DoHudText('error', 'Invalid Reason')
+                exports['mythic_notify']:SendAlert('error', 'Invalid Reason')
                 return
             end
             ShowBillAmount(id, society, value)
@@ -63,7 +63,7 @@ function ShowBillAmount(id, society, name)
         action = function(value)
             ESX.UI.Menu.CloseAll()
             if tonumber(value) == nil then
-                exports['mythic_notify']:DoHudText('error', 'Invalid Amount')
+                exports['mythic_notify']:SendAlert('error', 'Invalid Amount')
                 return
             end
             Bill(id, society, name, value)
@@ -73,7 +73,7 @@ function ShowBillAmount(id, society, name)
 end
 
 function Bill(id, society, name, value)
-    exports['mythic_notify']:DoHudText('success', 'Bill sent')
+    exports['mythic_notify']:SendAlert('success', 'Bill sent')
     TriggerServerEvent('esx_billing:sendBill', id, society, name, value)
 end
 

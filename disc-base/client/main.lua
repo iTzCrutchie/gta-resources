@@ -46,6 +46,8 @@ AddEventHandler('disc-base:openMenu', function(menu)
         OpenDialogMenu(menu)
     elseif type == 'list' then
         OpenListMenu(menu)
+    elseif type == 'confirmation' then
+        OpenConfirmationMenu(menu)
     end
 end)
 
@@ -62,24 +64,30 @@ function OpenDefaultMenu(menu)
         actions[key] = v.action
     end
 
+    if menu.onOpen then
+        menu.onOpen()
+    end
+
     ESX.UI.Menu.Open(getOrElse(menu.type, 'default'), GetCurrentResourceName(), getOrElse(menu.name, getOrElse(menu.title, 'default-menu-name')), {
         title = getOrElse(menu.title, 'default-menu-title'),
         align = getOrElse(menu.align, 'bottom-right'),
         elements = getOrElse(elements, emptyMenu)
-    },
-            function(data, m)
-                if getOrElse(actions[data.current.value], nil) then
-                    actions[data.current.value](data.current, m)
-                else
-                    exports['mythic_notify']:DoHudText('error', 'This menu has no action!')
-                end
-            end,
-            function(data, m)
-                if getOrElse(menu.close, nil) then
-                    menu.close()
-                end
-                m.close()
-            end)
+    }, function(data, m)
+        if getOrElse(actions[data.current.value], nil) then
+            actions[data.current.value](data.current, m)
+        else
+            exports['mythic_notify']:SendAlert('error', 'This menu has no action!')
+        end
+    end, function(data, m)
+        if getOrElse(menu.close, nil) then
+            menu.close()
+        end
+        m.close()
+    end, function(data, m)
+        if menu.onChange then
+            menu.onChange(data, m)
+        end
+    end)
 end
 
 function OpenDialogMenu(menu)
@@ -92,7 +100,7 @@ function OpenDialogMenu(menu)
                     menu.action(data.value)
                     m.close()
                 else
-                    exports['mythic_notify']:DoHudText('error', 'This menu has no action!')
+                    exports['mythic_notify']:SendAlert('error', 'This menu has no action!')
                 end
             end,
             function(data, m)
@@ -130,6 +138,21 @@ function OpenListMenu(menu)
     end, function(data, menu)
         ESX.UI.Menu.CloseAll()
     end)
+end
+
+function OpenConfirmationMenu(menu)
+    local options = {
+        { label = 'Yes', action = menu.confirmation },
+        { label = 'No', action = menu.denial },
+    }
+
+    local confirmation = {
+        title = 'Confirmation',
+        name = 'confirmation_' .. menu.name,
+        options = options
+    }
+
+    OpenDefaultMenu(confirmation)
 end
 
 

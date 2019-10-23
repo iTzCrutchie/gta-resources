@@ -66,7 +66,7 @@ end
 function SellProperty(property)
     TriggerServerEvent('disc-property:sellProperty', property)
     ESX.UI.Menu.CloseAll()
-    exports['mythic_notify']:DoHudText('success', 'Property Sold!')
+    exports['mythic_notify']:SendAlert('success', 'Property Sold!')
     TriggerEvent('disc-property:forceUpdatePropertyData')
 end
 
@@ -93,10 +93,10 @@ function BuyProperty(property)
     ESX.TriggerServerCallback('disc-property:buyProperty', function(bought)
         if bought then
             ESX.UI.Menu.CloseAll()
-            exports['mythic_notify']:DoHudText('success', 'Property Bought!')
+            exports['mythic_notify']:SendAlert('success', 'Property Bought!')
             TriggerEvent('disc-property:forceUpdatePropertyData')
         else
-            exports['mythic_notify']:DoHudText('error', 'You do not have enough money')
+            exports['mythic_notify']:SendAlert('error', 'You do not have enough money')
         end
     end, property)
 end
@@ -116,7 +116,7 @@ end
 function ShowSearchedUsers(value, property)
     ESX.TriggerServerCallback('disc-property:searchUsers', function(results)
         if #results == 0 then
-            exports['mythic_notify']:DoHudText('error', 'No civilian found')
+            exports['mythic_notify']:SendAlert('error', 'No civilian found')
             return
         end
         local options = {}
@@ -125,7 +125,7 @@ function ShowSearchedUsers(value, property)
                     {
                         label = v.firstname .. ' ' .. v.lastname, action = function(value, m)
                         TriggerServerEvent('disc-property:GiveKeys', property, v.identifier)
-                        exports['mythic_notify']:DoHudText('success', 'Gave keys to ' .. v.firstname .. ' ' .. v.lastname)
+                        exports['mythic_notify']:SendAlert('success', 'Gave keys to ' .. v.firstname .. ' ' .. v.lastname)
                         ESX.UI.Menu.CloseAll()
                     end
                     })
@@ -143,7 +143,7 @@ end
 function ShowKeyUsers(property)
     ESX.TriggerServerCallback('disc-property:getKeyUsers', function(results)
         if #results == 0 then
-            exports['mythic_notify']:DoHudText('error', 'No civilian found')
+            exports['mythic_notify']:SendAlert('error', 'No civilian found')
             return
         end
         local options = {}
@@ -152,7 +152,7 @@ function ShowKeyUsers(property)
                     {
                         label = v.firstname .. ' ' .. v.lastname, action = function(value, m)
                         TriggerServerEvent('disc-property:TakeKeys', property, v.identifier)
-                        exports['mythic_notify']:DoHudText('success', 'Took keys from ' .. v.firstname .. ' ' .. v.lastname)
+                        exports['mythic_notify']:SendAlert('success', 'Took keys from ' .. v.firstname .. ' ' .. v.lastname)
                         ESX.UI.Menu.CloseAll()
                     end
                     })

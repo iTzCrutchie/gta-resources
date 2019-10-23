@@ -4,6 +4,7 @@ ui_page 'html/ui.html'
 
 client_scripts {
     'client/main.lua',
+    'config.lua',
     'client/actions.lua',
     'client/inventory.lua',
     'client/drop.lua',
@@ -14,12 +15,13 @@ client_scripts {
     'client/search.lua',
     'client/stash.lua',
     'common/drop.lua',
-    'config.lua',
+    'common/weapons.lua',
     'utils.lua'
 }
 
 server_scripts {
     'server/main.lua',
+    'config.lua',
     '@mysql-async/lib/MySQL.lua',
     'server/actions.lua',
     'server/inventory.lua',
@@ -33,7 +35,7 @@ server_scripts {
     'server/stash.lua',
     'server/itemdata.lua',
     'common/drop.lua',
-    'config.lua',
+    'common/weapons.lua',
     'utils.lua'
 }
 
@@ -50,9 +52,7 @@ files {
     'html/js/popper.min.js',
 
     -- IMAGES
-    'html/img/bullet.png',
-    'html/img/cash.png',
-    'html/img/bank.png',
+    'html/img/*.png',
     'html/success.wav',
     'html/fail.wav',
     -- ICONS

@@ -32,7 +32,10 @@ end)
 RegisterServerEvent("disc-inventoryhud:MoveToEmpty")
 AddEventHandler("disc-inventoryhud:MoveToEmpty", function(data)
     local source = source
-    if data.originOwner == data.destinationOwner then
+    handleWeaponRemoval(data, source)
+    print(tostring(data.originSlot))
+    print(tostring(data.destinationSlot))
+    if data.originOwner == data.destinationOwner and data.originTier.name == data.destinationTier.name then
         local originInvHandler = InvType[data.originTier.name]
         originInvHandler.getInventory(data.originOwner, function(inventory)
             inventory[tostring(data.destinationSlot)] = inventory[tostring(data.originSlot)]
@@ -72,12 +75,14 @@ AddEventHandler("disc-inventoryhud:MoveToEmpty", function(data)
                 if data.originTier.name == 'player' then
                     data.originItem.block = true
                     TriggerEvent('disc-inventoryhud:notifyImpendingRemoval', data.originItem, data.originItem.qty, source)
+                    Citizen.Wait(1000)
                     ESX.GetPlayerFromIdentifier(data.originOwner).removeInventoryItem(data.originItem.id, data.originItem.qty)
                 end
 
                 if data.destinationTier.name == 'player' then
                     data.originItem.block = true
                     TriggerEvent('disc-inventoryhud:notifyImpendingAddition', data.originItem, data.originItem.qty, source)
+                    Citizen.Wait(1000)
                     ESX.GetPlayerFromIdentifier(data.destinationOwner).addInventoryItem(data.originItem.id, data.originItem.qty)
                 end
 
@@ -90,6 +95,7 @@ RegisterServerEvent("disc-inventoryhud:SwapItems")
 AddEventHandler("disc-inventoryhud:SwapItems", function(data)
     local source = source
 
+    handleWeaponRemoval(data, source)
     if data.originTier.name == 'shop' then
         print('Attempt to Swap in Store')
         TriggerEvent('disc-inventoryhud:refreshInventory', data.originOwner)
@@ -104,7 +110,7 @@ AddEventHandler("disc-inventoryhud:SwapItems", function(data)
         return
     end
 
-    if data.originOwner == data.destinationOwner then
+    if data.originOwner == data.destinationOwner and data.originTier.name == data.destinationTier.name then
         local originInvHandler = InvType[data.originTier.name]
         originInvHandler.getInventory(data.originOwner, function(inventory)
             local tempItem = inventory[tostring(data.originSlot)]
@@ -153,6 +159,7 @@ RegisterServerEvent("disc-inventoryhud:CombineStack")
 AddEventHandler("disc-inventoryhud:CombineStack", function(data)
     local source = source
 
+    handleWeaponRemoval(data, source)
     if data.originTier.name == 'shop' then
         local player = ESX.GetPlayerFromIdentifier(data.destinationOwner)
         if player.getMoney() >= data.originItem.price * data.originQty then
@@ -169,7 +176,7 @@ AddEventHandler("disc-inventoryhud:CombineStack", function(data)
         return
     end
 
-    if data.originOwner == data.destinationOwner then
+    if data.originOwner == data.destinationOwner and data.originTier.name == data.destinationTier.name then
         local originInvHandler = InvType[data.originTier.name]
         originInvHandler.getInventory(data.originOwner, function(inventory)
             inventory[tostring(data.originSlot)] = nil
@@ -208,6 +215,7 @@ end)
 RegisterServerEvent("disc-inventoryhud:EmptySplitStack")
 AddEventHandler("disc-inventoryhud:EmptySplitStack", function(data)
 
+    handleWeaponRemoval(data, source)
     if data.originTier.name == 'shop' then
         local player = ESX.GetPlayerFromIdentifier(data.destinationOwner)
         if player.getMoney() >= data.originItem.price * data.moveQty then
@@ -225,7 +233,7 @@ AddEventHandler("disc-inventoryhud:EmptySplitStack", function(data)
     end
 
     local source = source
-    if data.originOwner == data.destinationOwner then
+    if data.originOwner == data.destinationOwner and data.originTier.name == data.destinationTier.name then
         local originInvHandler = InvType[data.originTier.name]
         originInvHandler.getInventory(data.originOwner, function(inventory)
             inventory[tostring(data.originSlot)].count = inventory[tostring(data.originSlot)].count - data.moveQty
@@ -272,6 +280,7 @@ end)
 RegisterServerEvent("disc-inventoryhud:SplitStack")
 AddEventHandler("disc-inventoryhud:SplitStack", function(data)
     local source = source
+    handleWeaponRemoval(data, source)
 
     if data.originTier.name == 'shop' then
         local player = ESX.GetPlayerFromIdentifier(data.destinationOwner)
@@ -289,7 +298,7 @@ AddEventHandler("disc-inventoryhud:SplitStack", function(data)
         return
     end
 
-    if data.originOwner == data.destinationOwner then
+    if data.originOwner == data.destinationOwner and data.originTier.name == data.destinationTier.name then
         local originInvHandler = InvType[data.originTier.name]
         originInvHandler.getInventory(data.originOwner, function(inventory)
             inventory[tostring(data.originSlot)].count = inventory[tostring(data.originSlot)].count - data.moveQty
@@ -327,6 +336,7 @@ end)
 
 RegisterServerEvent("disc-inventoryhud:GiveItem")
 AddEventHandler("disc-inventoryhud:GiveItem", function(data)
+    handleWeaponRemoval(data, source)
     local targetPlayer = ESX.GetPlayerFromId(data.target)
     targetPlayer.addInventoryItem(data.item.id, data.count)
     local sourcePlayer = ESX.GetPlayerFromId(source)
@@ -456,7 +466,7 @@ function createDisplayItem(item, esxItem, slot, price, type)
         canRemove = esxItem.canRemove,
         price = price or 0,
         needs = false,
-        closeUi = true,
+        closeUi = getItemDataProperty(esxItem.name, 'closeonuse'),
     }
 end
 
@@ -532,4 +542,16 @@ function getInventory(identifier, type, cb)
         cb(json.decode(result[1].data))
         TriggerEvent('disc-inventoryhud:gotInventory', identifier, type, result[1].data)
     end)
+end
+
+function handleWeaponRemoval(data, source)
+    if isWeapon(data.originItem.id) then
+        if data.originOwner == data.destinationOwner and data.originTier.name == data.destinationTier.name then
+            if data.destinationSlot > 5 then
+                TriggerClientEvent('disc-inventoryhud:removeCurrentWeapon', source)
+            end
+        else
+            TriggerClientEvent('disc-inventoryhud:removeCurrentWeapon', source)
+        end
+    end
 end

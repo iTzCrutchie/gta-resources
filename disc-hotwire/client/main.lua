@@ -54,11 +54,11 @@ AddEventHandler('disc-hotwire:hotwire', function()
 
     isActive = true
     for i = 0, Config.Stages - 1, 1 do
-        exports['mythic_notify']:DoHudText('inform', 'Starting Stage ' .. i + 1)
+        exports['mythic_notify']:SendAlert('inform', 'Starting Stage ' .. i + 1)
         Citizen.Wait(Config.HotwireTime)
     end
 
-    exports['mythic_notify']:DoHudText('success', 'Ignition Wired!')
+    exports['mythic_notify']:SendAlert('success', 'Ignition Wired!')
     trackedVehicles[plate].canTurnOver = true
     isActive = false
 end)
@@ -73,6 +73,9 @@ Citizen.CreateThread(function()
             local plate = GetVehicleNumberPlateText(vehicle)
             if plate ~= nil then
                 TrackVehicle(plate, vehicle)
+                if GetIsVehicleEngineRunning(vehicle) then
+                    TriggerEvent('disc-hotwire:forceTurnOver', vehicle)
+                end
             end
         end
         --Test In Vehicles (Helps with Spawning Vehicles)

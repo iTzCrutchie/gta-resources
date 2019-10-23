@@ -46,7 +46,7 @@ AddEventHandler('disc-lockpick:lockpick', function(withTool)
         if count >= 1 then
             ESX.TriggerServerCallback('disc-base:takePlayerItem', function(took)
                 if not took then
-                    exports['mythic_notify']:DoHudText('error', 'You do not have the correct tool')
+                    exports['mythic_notify']:SendAlert('error', 'You do not have the correct tool')
                     return
                 end
                 LockPick(playerPed, veh, tool)
@@ -55,7 +55,7 @@ AddEventHandler('disc-lockpick:lockpick', function(withTool)
             LockPick(playerPed, veh, tool)
         end
     else
-        exports['mythic_notify']:DoHudText('error', 'Not at driver door')
+        exports['mythic_notify']:SendAlert('error', 'Not at driver door')
     end
 end)
 
@@ -82,7 +82,7 @@ function LockPick(playerPed, veh, tool)
         SetVehicleDoorsLockedForAllPlayers(veh, false)
         SetVehicleDoorsLocked(veh, 1)
         isLockPicking = false
-        exports['mythic_notify']:DoHudText('success', 'Door is open!')
+        exports['mythic_notify']:SendAlert('success', 'Door is open!')
     end)
 end
 

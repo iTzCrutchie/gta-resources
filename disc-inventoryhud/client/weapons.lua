@@ -1,17 +1,21 @@
 local currentWeapon
+local currentWeaponSlot
 
 RegisterNetEvent('disc-inventoryhud:useWeapon')
 AddEventHandler('disc-inventoryhud:useWeapon', function(weapon)
     if currentWeapon == weapon then
         RemoveWeapon(currentWeapon)
         currentWeapon = nil
+        currentWeaponSlot = nil
         return
     elseif currentWeapon ~= nil then
         RemoveWeapon(currentWeapon)
         currentWeapon = nil
+        currentWeaponSlot = nil
     end
     currentWeapon = weapon
     GiveWeapon(currentWeapon)
+    ClearPedTasks(PlayerPedId())
 end)
 
 RegisterNetEvent('disc-inventoryhud:removeCurrentWeapon')
@@ -19,6 +23,8 @@ AddEventHandler('disc-inventoryhud:removeCurrentWeapon', function()
     if currentWeapon ~= nil then
         RemoveWeapon(currentWeapon)
         currentWeapon = nil
+        currentWeaponSlot = nil
+        ClearPedTasks(PlayerPedId())
     end
 end)
 

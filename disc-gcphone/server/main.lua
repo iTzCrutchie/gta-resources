@@ -25,6 +25,11 @@ AddEventHandler('disc-gcphone:sendMessageFrom', function(from, number, message, 
     end)
 end)
 
+RegisterServerEvent('disc-gcphone:sendMessageTo')
+AddEventHandler('disc-gcphone:sendMessageTo', function(number, message, serverId)
+    TriggerEvent('esx_addons_gcphone:startCall', number, message, serverId)
+end)
+
 ESX.RegisterServerCallback('disc-gcphone:getNumber', function(source, cb)
     local player = ESX.GetPlayerFromId(source)
     MySQL.Async.fetchAll("SELECT users.phone_number FROM users WHERE users.identifier = @identifier", {

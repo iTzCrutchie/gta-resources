@@ -8,7 +8,7 @@ Citizen.CreateThread(function()
 
         for k, v in pairs(serverDrops) do
             local dropCoords = getCoordsFromOwner(k)
-            if GetDistanceBetweenCoords(dropCoords.x, dropCoords.y, dropCoords.z, coords.x, coords.y, coords.z, true) < 10 then
+            if GetDistanceBetweenCoords(dropCoords.x, dropCoords.y, dropCoords.z, coords.x, coords.y, coords.z, true) < 20 then
                 if drops[k] then
                     drops[k].active = true
                 else

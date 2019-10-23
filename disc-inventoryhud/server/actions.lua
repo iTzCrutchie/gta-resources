@@ -11,3 +11,26 @@ ESX.RegisterServerCallback('disc-inventoryhud:UseItemFromSlot', function(source,
         cb(nil)
     end)
 end)
+ESX.RegisterServerCallback('disc-inventoryhud:GetItemsInSlotsDisplay', function(source, cb)
+    local player = ESX.GetPlayerFromId(source)
+    InvType['player'].getInventory(player.identifier, function(inventory)
+        local slotItems = {}
+        for i = 1, 5, 1 do
+            local item = inventory[tostring(i)]
+            if item then
+                local esxItem = player.getInventoryItem(item.name)
+                slotItems[i] = {
+                    itemId = item.name,
+                    label = esxItem.label,
+                    qty = item.count,
+                    slot = i
+                }
+            else
+                slotItems[i] = nil
+            end
+        end
+        cb(slotItems)
+    end)
+end)
+
+

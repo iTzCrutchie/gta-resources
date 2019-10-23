@@ -61,7 +61,7 @@ function PutInVehicle()
         if DoesVehicleHaveDoor(vehicle, 5) then
             TriggerServerEvent('dragme:putInVehicle', GetPlayerServerId(closestPlayer))
         else
-            exports['mythic_notify']:DoHudText('error', 'This car does not have a boot.')
+            exports['mythic_notify']:SendAlert('error', 'This car does not have a boot.')
         end
     end
 end

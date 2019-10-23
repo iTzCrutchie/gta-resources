@@ -4,6 +4,8 @@ Config.DiscussTime = 5000
 
 Config.CopsNeeded = 2
 
+Config.NotifyCopsPercentage = 100
+
 Config.DrugItems = {
     meth = {
         name = 'Meth',

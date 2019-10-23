@@ -49,7 +49,7 @@ function ShowCompensationReason(compensation)
         name = 'compensate_reason',
         action = function(value)
             if value == nil or value == '' then
-                exports['mythic_notify']:DoHudText('error', 'Invalid Reason')
+                exports['mythic_notify']:SendAlert('error', 'Invalid Reason')
                 return
             end
             ESX.UI.Menu.CloseAll()
@@ -67,7 +67,7 @@ function ShowCompensationValue(compensation)
         name = 'compensate_value',
         action = function(value)
             if tonumber(value) == nil then
-                exports['mythic_notify']:DoHudText('error', 'Invalid Amount')
+                exports['mythic_notify']:SendAlert('error', 'Invalid Amount')
                 return
             end
             ESX.UI.Menu.CloseAll()
@@ -80,7 +80,7 @@ end
 
 function Compensate(compensation)
     TriggerServerEvent('disc-compensation:compensate', compensation)
-    exports['mythic_notify']:DoHudText('success', 'Compensation has given!')
+    exports['mythic_notify']:SendAlert('success', 'Compensation has given!')
 end
 
 function GetNeareastPlayers()
@@ -99,7 +99,7 @@ end
 
 RegisterNetEvent('disc-compensation:receiveCompensation')
 AddEventHandler('disc-compensation:receiveCompensation', function(amount)
-    exports['mythic_notify']:DoHudText('success', 'You have received compensation for $' .. amount)
+    exports['mythic_notify']:SendAlert('success', 'You have received compensation for $' .. amount)
 end)
 
 

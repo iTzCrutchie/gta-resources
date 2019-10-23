@@ -66,7 +66,7 @@ end
 
 function ShowWarrants(warrants)
     if #warrants == 0 then
-        exports['mythic_notify']:DoHudText('error', 'No Warrants found!')
+        exports['mythic_notify']:SendAlert('error', 'No Warrants found!')
         return
     end
     local options = {}
@@ -112,15 +112,15 @@ end
 function SwapWarrantState(warrant)
     warrant.active = not warrant.active
     if warrant.active then
-        exports['mythic_notify']:DoHudText('success', 'Activating Warrant')
+        exports['mythic_notify']:SendAlert('success', 'Activating Warrant')
     else
-        exports['mythic_notify']:DoHudText('success', 'Deactivating Warrant')
+        exports['mythic_notify']:SendAlert('success', 'Deactivating Warrant')
     end
     TriggerServerEvent('disc-warrant:setWarrantState', warrant)
 end
 
 function SendWarrant(warrant)
-    exports['mythic_notify']:DoHudText('inform', 'Requesting Warrant Information!')
+    exports['mythic_notify']:SendAlert('inform', 'Requesting Warrant Information!')
     local random = math.random(Config.WaitTime.Min, Config.WaitTime.Max)
     Citizen.Wait(random)
     local message = 'Warrant for ' .. getOrElse(warrant.firstname, 'Unknown') .. ' ' .. getOrElse(warrant.lastname, 'Unknown') .. '\nDescription: ' .. warrant.char_description .. '\nCrime: ' .. warrant.crime_description
@@ -197,7 +197,7 @@ end
 function DoCharSearch(value)
     ESX.TriggerServerCallback('disc-warrant:searchUsers', function(results)
         if #results == 0 then
-            exports['mythic_notify']:DoHudText('error', 'No civilian found')
+            exports['mythic_notify']:SendAlert('error', 'No civilian found')
             return
         end
         local options = {}
@@ -232,6 +232,6 @@ function CreateWarrant(value, m)
     end
     ESX.UI.Menu.CloseAll()
     TriggerServerEvent('disc-warrant:createWarrant', CurrentWarrant)
-    exports['mythic_notify']:DoHudText('success', 'Created Warrant!')
+    exports['mythic_notify']:SendAlert('success', 'Created Warrant!')
 end
 

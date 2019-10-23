@@ -99,7 +99,7 @@ function StartImport(k, config)
 
     ESX.TriggerServerCallback('disc-base:buy', function(bought)
         if bought == 0 then
-            exports['mythic_notify']:DoHudText('error', 'Not Enough Money! You need $' .. config.Price)
+            exports['mythic_notify']:SendAlert('error', 'Not Enough Money! You need $' .. config.Price)
             return
         end
 
@@ -128,7 +128,7 @@ function FinishImport(k, v)
             ActiveVehicle = nil
             TriggerServerEvent('disc-base:givePlayerItem', v.Item , v.Quantity)
         else
-            exports['mythic_notify']:DoHudText('error', 'Where are my items?!')
+            exports['mythic_notify']:SendAlert('error', 'Where are my items?!')
         end
     end, 'crate', 1)
 end

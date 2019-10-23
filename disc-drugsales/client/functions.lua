@@ -6,38 +6,41 @@ TryToSell = function(pedId, coords)
 
     cachedPeds[pedId] = true
 
-    FreezeEntityPosition(pedId, true)
-    FreezeEntityPosition(PlayerPedId(), true)
-    TaskStandStill(pedId, Config.DiscussTime)
-
-    Citizen.Wait(Config.DiscussTime)
+    ClearPedTasksImmediately(pedId)
 
     math.randomseed(GetGameTimer())
 
     local canSell = math.random(0, 100)
 
-    if canSell > 5 then
+    if canSell > Config.NotifyCopsPercentage then
+        TaskTurnPedToFaceEntity(pedId, PlayerPedId(), Config.DiscussTime)
+        Citizen.Wait(Config.DiscussTime / 2)
+        PlayAnim(pedId, 'mp_common', 'givetake1_a')
         Sell()
+        Citizen.Wait(Config.DiscussTime / 2)
+        PlayAnim(PlayerPedId(), 'mp_common', 'givetake1_a')
     else
         serverId = GetPlayerServerId(PlayerId())
-        message = 'Dispatch Message: Drug Sale Attempt in progress at GPS: ' .. coords.x .. ', ' .. coords.y
-        TriggerServerEvent('disc-gcphone:sendMessageFrom', 'police', 'police', message, serverId)
-        exports['mythic_notify']:DoHudText('error', "Are you stupid? Don't ever contact me again.")
+        message = 'Dispatch Message: Drug Sale Attempt in progress'
+        TriggerServerEvent('esx_addons_gcphone:startCall', 'police', message, coords)
+        exports['mythic_notify']:SendAlert('error', "Are you stupid? Don't ever contact me again.")
     end
-
-    SetPedAsNoLongerNeeded(pedId)
-
-    FreezeEntityPosition(PlayerPedId(), false)
-    FreezeEntityPosition(pedId, false)
+    ClearPedTasks(PlayerPedId())
 end
 
 Sell = function()
     ESX.TriggerServerCallback("disc-drugsales:sellDrug", function(soldDrug)
         if soldDrug then
-            exports['mythic_notify']:DoHudText('success', "Thanks! Here's $" .. soldDrug)
+            exports['mythic_notify']:SendAlert('success', "Thanks! Here's $" .. soldDrug)
         else
-            exports['mythic_notify']:DoHudText('error', "Well don't try to waste my time if you don't even have something to sell?")
+            exports['mythic_notify']:SendAlert('error', "Well don't try to waste my time if you don't even have something to sell?")
         end
+    end)
+end
+
+function PlayAnim(ped, lib, anim, r)
+    ESX.Streaming.RequestAnimDict(lib, function()
+        TaskPlayAnim(ped, lib, anim, 8.0, -8, -1, r and 49 or 0, 0, 0, 0, 0)
     end)
 end
 

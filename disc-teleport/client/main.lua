@@ -60,7 +60,7 @@ function Teleport(teleporter)
     if teleporter.allowVehicles and IsPedSittingInAnyVehicle(entity) then
         entity = GetVehiclePedIsIn(entity)
         if not ESX.Game.IsSpawnPointClear(teleporter.destination, 3.0) then
-            exports['mythic_notify']:DoHudText('error', 'Teleport Destination Blocked for Vehicle')
+            exports['mythic_notify']:SendAlert('error', 'Teleport Destination Blocked for Vehicle')
             return
         end
     end
@@ -70,7 +70,7 @@ function Teleport(teleporter)
     SetEntityCoords(entity, x, y, z, 0, 0, 0, false)
     SetEntityHeading(entity, teleporter.heading)
     PlaceObjectOnGroundProperly(entity)
-    exports['mythic_notify']:DoHudText('success', 'Teleported!')
+    exports['mythic_notify']:SendAlert('success', 'Teleported!')
     TriggerEvent('disc-base:hasExitedMarker')
     Citizen.Wait(700)
     DoScreenFadeIn(200)

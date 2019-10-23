@@ -71,13 +71,13 @@ function DeliverDrugs()
     --Take Drugs
     ESX.TriggerServerCallback('disc-base:takePlayerItem', function(tookItem)
         if not tookItem then
-            exports['mythic_notify']:DoHudText('error', 'You don\'t have the drugs? Where is it?')
+            exports['mythic_notify']:SendAlert('error', 'You don\'t have the drugs? Where is it?')
             EndRuns()
         else
             --Pay for Drugs
             local price = math.random(Config.Drugs[currentDrugTask.drugsIndex].price[1], Config.Drugs[currentDrugTask.drugsIndex].price[2])
 
-            exports['mythic_notify']:DoHudText('success', 'Good, Here\'s $' .. price)
+            exports['mythic_notify']:SendALert('success', 'Good, Here\'s $' .. price)
             TriggerServerEvent('disc-base:givePlayerMoney', price)
             --Continue if has more runs
             GotoNextRun()
@@ -88,7 +88,7 @@ end
 function StartNewRun()
     ESX.TriggerServerCallback('disc-base:takePlayerMoney', function(took)
         if not took then
-            exports['mythic_notify']:DoHudText('error', 'You don\'t have enough money, you need $' .. Config.StartPrice)
+            exports['mythic_notify']:SendAlert('error', 'You don\'t have enough money, you need $' .. Config.StartPrice)
             return
         end
         isRunActive = true
@@ -100,7 +100,7 @@ function StartNewRun()
             runsLeft = drugCount,
             drugsIndex = drugIndex
         }
-        exports['mythic_notify']:DoHudText('success', 'Starting Drug Run!')
+        exports['mythic_notify']:SendAlert('success', 'Starting Drug Run!')
         TriggerServerEvent('disc-base:givePlayerItem', Config.Drugs[drugIndex].item, drugCount)
         Config.DeliveryPoints[currentDrugTask.pointIndex].isDeliveryPointActive = true
     end, Config.StartPrice)

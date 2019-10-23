@@ -61,11 +61,11 @@ end
 function BuyItem(item, price)
     ESX.TriggerServerCallback('disc-shops:buyItem', function(result)
         if result == 1 then
-            exports['mythic_notify']:DoHudText('success', 'Item bought!')
+            exports['mythic_notify']:SendAlert('success', 'Item bought!')
         elseif result == 0 then
-            exports['mythic_notify']:DoHudText('error', 'You need $' .. price)
+            exports['mythic_notify']:SendAlert('error', 'You need $' .. price)
         else
-            exports['mythic_notify']:DoHudText('error', 'You do not have inventory space')
+            exports['mythic_notify']:SendAlert('error', 'You do not have inventory space')
         end
     end
     , item, price)

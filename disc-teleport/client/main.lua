@@ -1,4 +1,5 @@
 ESX = nil
+ESXLoaded = false
 
 Citizen.CreateThread(function()
     while ESX == nil do
@@ -13,6 +14,7 @@ Citizen.CreateThread(function()
     end
 
     ESX.PlayerData = ESX.GetPlayerData()
+    ESXLoaded = true
 end)
 
 RegisterNetEvent('esx:setJob')
@@ -21,7 +23,9 @@ AddEventHandler('esx:setJob', function(job)
 end)
 
 Citizen.CreateThread(function()
-    Citizen.Wait(0)
+    while not ESXLoaded do
+        Citizen.Wait(10)
+    end
     for k, v in pairs(Config.Teleporters) do
         local marker = {
             name = v.name .. '_teleporter',
@@ -29,7 +33,7 @@ Citizen.CreateThread(function()
             coords = v.coords,
             colour = v.colour,
             size = vector3(2.0, 2.0, 2.0),
-            msg = 'Press ~INPUT_CONTEXT~ to Teleport to ' .. v.name,
+            msg = _U('tpkey') .. v.name,
             action = function()
                 Teleport(v)
             end,
@@ -60,7 +64,7 @@ function Teleport(teleporter)
     if teleporter.allowVehicles and IsPedSittingInAnyVehicle(entity) then
         entity = GetVehiclePedIsIn(entity)
         if not ESX.Game.IsSpawnPointClear(teleporter.destination, 3.0) then
-            exports['mythic_notify']:SendAlert('error', 'Teleport Destination Blocked for Vehicle')
+            exports['mythic_notify']:SendAlert('error', _U('blocked'))
             return
         end
     end
@@ -70,7 +74,7 @@ function Teleport(teleporter)
     SetEntityCoords(entity, x, y, z, 0, 0, 0, false)
     SetEntityHeading(entity, teleporter.heading)
     PlaceObjectOnGroundProperly(entity)
-    exports['mythic_notify']:SendAlert('success', 'Teleported!')
+    exports['mythic_notify']:SendAlert('success', _U('ported'))
     TriggerEvent('disc-base:hasExitedMarker')
     Citizen.Wait(700)
     DoScreenFadeIn(200)

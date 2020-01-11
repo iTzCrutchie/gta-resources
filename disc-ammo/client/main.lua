@@ -51,7 +51,7 @@ end)
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
-        local found, currentWeapon = GetCurrentPedWeapon(GetPlayerPed(-1))
-        DisplayAmmoThisFrame(found)
+        local currentWeapon = GetSelectedPedWeapon(GetPlayerPed(-1)) --morpheause show ammo fix
+        DisplayAmmoThisFrame(currentWeapon)
     end
 end)

@@ -7,6 +7,7 @@ Config.Ammo = {
         name = 'disc_ammo_pistol',
         weapons = {
             `WEAPON_PISTOL`,
+            `WEAPON_APPISTOL`,
             `WEAPON_SNSPISTOL`,
             `WEAPON_COMBATPISTOL`,
             `WEAPON_HEAVYPISTOL`,
@@ -21,6 +22,7 @@ Config.Ammo = {
         name = 'disc_ammo_pistol_large',
         weapons = {
             `WEAPON_PISTOL`,
+            `WEAPON_APPISTOL`,
 			`WEAPON_SNSPISTOL`,
             `WEAPON_COMBATPISTOL`,
             `WEAPON_HEAVYPISTOL`,

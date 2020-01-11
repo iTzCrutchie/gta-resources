@@ -226,7 +226,7 @@ body .ui .inventory #controls .controls-div .control.hover {
 }
 
 body .ui .inventory #controls .controls-div .control.disabled {
-  background-color: rgba(54, 54, 54, 0.81) !important;
+  background-color: rgba(150, 54, 54, 0.81) !important;
   transition: all ease-in 0.15s;
 }
 

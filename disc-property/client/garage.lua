@@ -3,16 +3,16 @@ local busy = false
 function OpenGarage(property)
 
     local options = {
-        { label = 'Store Vehicle', action = function()
+        { label = _U('parked'), action = function()
             local playerPed = GetPlayerPed(-1)
             if IsPedInAnyVehicle(playerPed) then
                 StoreVehicle(GetVehiclePedIsIn(playerPed), property.name)
             else
-                exports['mythic_notify']:SendAlert('error', 'No vehicle to store')
+                exports['mythic_notify']:SendAlert('error', _U('noveh'))
             end
             ESX.UI.Menu.CloseAll()
         end },
-        { label = 'Get Vehicle', action = function()
+        { label = _U('takeveh'), action = function()
             if ESX.Game.IsSpawnPointClear(property.garage.coords, 3.0) then
                 ESX.TriggerServerCallback('disc-property:getStoredVehicles', function(results)
                     local options = {}
@@ -30,20 +30,20 @@ function OpenGarage(property)
                     end
                     local menu = {
                         name = 'garage_vehicles',
-                        title = 'Garage',
+                        title = _U('garage'),
                         options = options
                     }
                     TriggerEvent('disc-base:openMenu', menu)
                 end, property.name)
             else
-                exports['mythic_notify']:SendAlert('error', 'No space to spawn!')
+                exports['mythic_notify']:SendAlert('error', _U('nospace'))
             end
         end },
     }
 
     local menu = {
         name = 'garage',
-        title = 'Garage',
+        title = _U('garage'),
         options = options
     }
     TriggerEvent('disc-base:openMenu', menu)
@@ -58,11 +58,11 @@ function StoreVehicle(vehicle, propertyName)
             local vehicleName = GetLabelText(GetDisplayNameFromVehicleModel(props.model))
             local label = ('%s - <span style="color:blue;">%s</span>'):format(vehicleName, props.plate)
             ESX.Game.DeleteVehicle(vehicle)
-            exports['mythic_notify']:SendAlert('success', 'Storing ' .. label)
+            exports['mythic_notify']:SendAlert('success', _U('saving') .. label)
         elseif stored == 'notowned' then
-            exports['mythic_notify']:SendAlert('error', 'You do not own this vehicle')
+            exports['mythic_notify']:SendAlert('error', _U('notowned'))
         elseif stored == 'max' then
-            exports['mythic_notify']:SendAlert('error', 'You have exceeded garage capacity')
+            exports['mythic_notify']:SendAlert('error', _U('exceed'))
         end
         busy = false
     end, propertyName, props)
@@ -78,7 +78,7 @@ function SpawnVehicle(garageCoords, heading, props)
             ESX.Game.SpawnVehicle(props.model, garageCoords, heading, function(vehicle)
                 ESX.Game.SetVehicleProperties(vehicle, props)
                 TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
-                exports['mythic_notify']:SendAlert('success', 'Spawned ' .. label)
+                exports['mythic_notify']:SendAlert('success', _U('spawned') .. label)
                 busy = false
             end)
         end

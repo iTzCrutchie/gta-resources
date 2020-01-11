@@ -1,8 +1,13 @@
-resource_manifest_version "44febabe-d386-4d18-afbe-5e627f4af937"
+resource_manifest_version '05cfa83c-a124-4cfa-a768-c24a5811d8f9'
+
+description 'Disc InventoryHud'
+
+version '0.4.2'
 
 ui_page 'html/ui.html'
 
 client_scripts {
+    '@es_extended/locale.lua',
     'client/main.lua',
     'config.lua',
     'client/actions.lua',
@@ -16,10 +21,13 @@ client_scripts {
     'client/stash.lua',
     'common/drop.lua',
     'common/weapons.lua',
-    'utils.lua'
+    'utils.lua',
+    'locales/cs.lua',
+    'locales/en.lua',
 }
 
 server_scripts {
+    '@es_extended/locale.lua',
     'server/main.lua',
     'config.lua',
     '@mysql-async/lib/MySQL.lua',
@@ -36,7 +44,9 @@ server_scripts {
     'server/itemdata.lua',
     'common/drop.lua',
     'common/weapons.lua',
-    'utils.lua'
+    'utils.lua',
+    'locales/cs.lua',
+    'locales/en.lua',
 }
 
 files {
@@ -51,10 +61,14 @@ files {
     'html/js/bootstrap.min.js',
     'html/js/popper.min.js',
 
+    -- JS langs
+    'html/locales/cs.js',
+    'html/locales/en.js',
     -- IMAGES
     'html/img/*.png',
     'html/success.wav',
     'html/fail.wav',
+    'html/fail2.wav',
     -- ICONS
 
     'html/img/items/*.png',

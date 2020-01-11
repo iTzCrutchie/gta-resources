@@ -5,11 +5,10 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1000)
         local coords = GetEntityCoords(GetPlayerPed(-1))
-
         for k, v in pairs(serverDrops) do
             local dropCoords = getCoordsFromOwner(k)
             if GetDistanceBetweenCoords(dropCoords.x, dropCoords.y, dropCoords.z, coords.x, coords.y, coords.z, true) < 20 then
-                if drops[k] then
+               if drops[k] then
                     drops[k].active = true
                 else
                     drops[k] = {
@@ -36,7 +35,7 @@ Citizen.CreateThread(function()
                 TriggerEvent('disc-base:registerMarker', marker)
             else
                 TriggerEvent('disc-base:removeMarker', v.name .. '_drop')
-                drops[v.name] = nil
+                drops[k] = nil
             end
         end
     end
@@ -44,5 +43,6 @@ end)
 
 RegisterNetEvent('disc-inventoryhud:updateDrops')
 AddEventHandler('disc-inventoryhud:updateDrops', function(newDrops)
+    print('Receive Drops')
     serverDrops = newDrops
 end)

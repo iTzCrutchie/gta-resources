@@ -1,5 +1,7 @@
 Config = {}
 
+Config.Locale = 'en'
+
 Config.Teleporters = {
     {
         name = 'Test Teleport',

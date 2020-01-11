@@ -4,7 +4,9 @@ local stashSecondaryInventory = {
 }
 
 Citizen.CreateThread(function()
-    Citizen.Wait(0)
+    while not ESXLoaded do
+        Citizen.Wait(10)
+    end
     for k, v in pairs(Config.Stash) do
         local marker = {
             name = k,
@@ -19,7 +21,7 @@ Citizen.CreateThread(function()
             shouldDraw = function()
                 return ESX.PlayerData.job.name == v.job or v.job == 'all'
             end,
-            msg = v.msg or 'Press ~INPUT_CONTEXT~ to open Stash',
+            msg = v.msg or _U('keystash'),
         }
         TriggerEvent('disc-base:registerMarker', marker)
     end

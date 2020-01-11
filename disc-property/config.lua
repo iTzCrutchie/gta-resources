@@ -1,7 +1,9 @@
 Config = {}
 
+Config.Locale = 'en'
 Config.BuyPercentage = 1.0
 Config.ResellPercentage = 0.7
+Config.Dirty = false
 Config.FoodItem = 'bread'
 Config.Garage = {
     max = 2,
@@ -31,6 +33,10 @@ Config.Properties = {
         garage = {
             coords = vector3(-188.73, 500.61, 134.64),
             heading = 0.0
+        },
+        shower = {
+            coords = vector3(-168.33, 489.93, 133.20),
+            heading = 276.88
         },
         rooms = {
             {
@@ -73,6 +79,10 @@ Config.Properties = {
         garage = {
             coords = vector3(-864.65, 698.71, 149.04)
         },
+        shower = {
+            coords = vector3(-855.42, 682.09, 149.08),
+            heading = 10.51
+        },
         rooms = {
             {
                 clothes = {
@@ -112,6 +122,10 @@ Config.Properties = {
         },
         garage = {
             coords = vector3(-684.55, 603.1, 143.52)
+        },
+        shower = {
+            coords = vector3(-673.00, 589.02, 141.60),
+            heading = 43.84
         },
         rooms = {
             {
@@ -153,6 +167,10 @@ Config.Properties = {
         garage = {
             coords = vector3(-752.9, 627.99, 142.51)
         },
+        shower = {
+            coords = vector3(-765.28, 611.52, 140.36),
+            heading = 286.24
+        },
         rooms = {
             {
                 clothes = {
@@ -192,6 +210,10 @@ Config.Properties = {
         },
         garage = {
             coords = vector3(131.78, 568.43, 183.35)
+        },
+        shower = {
+            coords = vector3(121.87, 550.89, 180.53),
+            heading = 10.75
         },
         rooms = {
             {
@@ -233,6 +255,10 @@ Config.Properties = {
         garage = {
             coords = vector3(-1298.09, 456.83, 97.42)
         },
+        shower = {
+            coords = vector3(-1286.02, 440.25, 94.12),
+            heading = 9.14
+        },
         rooms = {
             {
                 clothes = {
@@ -272,6 +298,10 @@ Config.Properties = {
         },
         garage = {
             coords = vector3(117.54, -1931.32, 20.74)
+        },
+        shower = {
+            coords = vector3(254.42, -1000.45, -98.93),
+            heading = 346.95
         },
         rooms = {
             {
@@ -313,6 +343,10 @@ Config.Properties = {
         garage = {
             coords = vector3(852.3, -542.01, 57.32)
         },
+        shower = {
+            coords = vector3(347.07, -995.21, -99.11),
+            heading = 95.04
+        },
         rooms = {
             {
                 clothes = {
@@ -352,6 +386,10 @@ Config.Properties = {
         garage = {
             coords = vector3(352.1, 436.78, 147.25)
         },
+        shower = {
+            coords = vector3(336.27, 429.41, 145.60),
+            heading = 297.35
+        },
         rooms = {
             {
                 clothes = {
@@ -390,6 +428,10 @@ Config.Properties = {
         },
         garage = {
             coords = vector3(391.32, 430.66, 143.55)
+        },
+        shower = {
+            coords = vector3(375.09, 413.88, 142.13),
+            heading = 348.18
         },
         rooms = {
             {

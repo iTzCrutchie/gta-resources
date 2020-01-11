@@ -1,5 +1,7 @@
 Config = {}
 
+Config.Locale = 'en'
+
 Config.Armories = {
     {
         name = 'Police',
@@ -17,4 +19,3 @@ Config.Armories = {
         }
     }
 }
-

@@ -15,19 +15,19 @@ files {
 	'html/js/app.js',
 	'html/index.html',
 
-    'html/css/jquery-ui.min.css',
-    'html/js/jquery.min.js',
-    'html/js/jquery-ui.min.js',
+	'html/css/jquery-ui.min.css',
+	'html/js/jquery.min.js',
+	'html/js/jquery-ui.min.js',
 }
 
 client_scripts {
 	'client/client.lua',
-	--'client/main.lua',
 }
 
 server_scripts {
 	'server/main.lua',
 }
-exports {
-  'setVoice'
+
+dependencies {
+	'baseevents'
 }

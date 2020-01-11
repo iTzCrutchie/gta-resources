@@ -1,14 +1,14 @@
 function OpenClothes(room)
 
     local options = {
-        { label = 'Change Clothes', action = ShowChangeClothes },
-        { label = 'Save Clothes', action = ShowSaveClothes },
-        { label = 'Remove Clothes', action = ShowRemoveClothes }
+        { label = _U('changec'), action = ShowChangeClothes },
+        { label = _U('savec'), action = ShowSaveClothes },
+        { label = _U('removec'), action = ShowRemoveClothes }
     }
 
     local menu = {
         name = 'clothes',
-        title = 'Clothes',
+        title = _U('clothes'),
         options = options
     }
 
@@ -28,7 +28,7 @@ function ShowChangeClothes()
 
         local menu = {
             name = 'show_clothes',
-            title = 'Clothes',
+            title = _U('clothes'),
             options = options
         }
 
@@ -46,13 +46,13 @@ function ChangeToClothes(clothes, label)
         end)
     end)
     ESX.UI.Menu.CloseAll()
-    exports['mythic_notify']:SendAlert('success', 'Change to Clothes: ' .. label)
+    exports['mythic_notify']:SendAlert('success', _U('changc') .. label)
 end
 
 function ShowSaveClothes()
     local menu = {
         type = 'dialog',
-        title = 'Name your Outfit',
+        title = _U('nameout'),
         action = SaveClothes
     }
     TriggerEvent('disc-base:openMenu', menu)
@@ -61,7 +61,7 @@ end
 function SaveClothes(value)
     TriggerEvent('skinchanger:getSkin', function(skin)
         TriggerServerEvent('esx_clotheshop:saveOutfit', value, skin)
-        exports['mythic_notify']:SendAlert('success', 'Saved Clothes: ' .. value)
+        exports['mythic_notify']:SendAlert('success', _U('savc') .. value)
         ESX.UI.Menu.CloseAll()
     end)
 end
@@ -79,7 +79,7 @@ function ShowRemoveClothes()
 
         local menu = {
             name = 'remove_clothes',
-            title = 'Remove Clothes',
+            title = _U('removec'),
             options = options
         }
 
@@ -89,7 +89,6 @@ end
 
 function RemoveClothes(label)
     TriggerServerEvent('disc-property:removeOutfit', label)
-    exports['mythic_notify']:SendALert('success', 'Removed Clothes: ' .. label)
+    exports['mythic_notify']:SendALert('success', _U('remc') .. label)
     ESX.UI.Menu.CloseAll()
 end
-

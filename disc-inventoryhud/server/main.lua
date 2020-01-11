@@ -21,6 +21,13 @@ AddEventHandler('disc-inventoryhud:RegisterInventory', function(inventory)
         end
     end
 
+    if inventory.applyToInventory == nil then
+        print('Registering Default applyToInventory')
+        inventory.applyToInventory = function(identifier, f)
+            applyToInventory(identifier, inventory.name, f)
+        end
+    end
+
     if inventory.saveInventory == nil then
         print('Registering Default saveInventory')
         inventory.saveInventory = function(identifier, toSave)
@@ -40,13 +47,20 @@ AddEventHandler('disc-inventoryhud:RegisterInventory', function(inventory)
     end
 
     InvType[inventory.name] = inventory
+    loadedInventories[inventory.name] = {}
 end)
 
 TriggerEvent('esx:getSharedObject', function(obj)
     ESX = obj
 end)
 
+ESX.RegisterServerCallback('disc-inventoryhud:doesInvTypeExists', function(source, cb, type)
+    cb(InvType[type] ~= nil)
+end)
+
 RegisterCommand('ensureInv', function(source)
+    local owner = ESX.GetPlayerFromId(source).identifier
+    MySQL.Async.fetchAll('DELETE FROM disc_inventory WHERE data = @data AND owner = @owner', { ['@data'] = "null", ['@owner'] = owner })  -- Tgiann "Null" Fix
     ensureInventories(source)
 end)
 
@@ -61,8 +75,26 @@ RegisterCommand('test', function(source, args, raw)
     print(getCoordsFromOwner(str))
 end)
 
+AddEventHandler("onResourceStop", function(resource)
+    if resource == GetCurrentResourceName() then
+        saveInventories()
+    end
+end)
 
+AddEventHandler('esx:playerLoaded', function(data)
+    local player = ESX.GetPlayerFromId(data)
+    ensurePlayerInventory(player)
+end)
 
+Citizen.CreateThread(function()
+    local players = ESX.GetPlayers()
+    for k, v in ipairs(players) do
+        ensurePlayerInventory(ESX.GetPlayerFromId(v))
+    end
+end)
 
-
-
+AddEventHandler('esx:playerDropped', function(source)
+    local player = ESX.GetPlayerFromId(source)
+    saveInventory(player.identifier, 'player')
+    closeAllOpenInventoriesForSource(source)
+end)

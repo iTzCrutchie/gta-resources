@@ -1,18 +1,18 @@
 function OpenKitchen(property)
 
     local options = {
-        { label = 'Make Food', action = MakeFood }
+        { label = _U('cook'), action = MakeFood }
     }
 
     if IsPlayerOwnerOf(property) then
-        table.insert(options, { label = 'Manage Property', action = function()
+        table.insert(options, { label = _U('manage'), action = function()
             ShowManageProperty(property)
         end })
     end
 
     local menu = {
         name = 'kitchen',
-        title = 'Kitchen',
+        title = _U('kitchen'),
         options = options
     }
 

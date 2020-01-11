@@ -34,9 +34,11 @@ ESX.RegisterServerCallback('disc-inventoryhud:getAmmoCount', function(source, cb
         ['@hash'] = hash
     }, function(results)
         if #results == 0 then
-            cb(0)
+            cb(nil)
         else
             cb(results[1].count)
         end
     end)
 end)
+
+

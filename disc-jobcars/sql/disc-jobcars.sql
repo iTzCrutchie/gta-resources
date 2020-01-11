@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS job_cars
 (
-    id     BIGINT UNSIGNED AUTO_INCREMENT,
+    id     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     owner  TEXT                 NOT NULL,
     plate  TEXT                 NOT NULL,
     props  LONGTEXT             NULL,
@@ -10,6 +10,3 @@ CREATE TABLE IF NOT EXISTS job_cars
     CONSTRAINT id
         UNIQUE (id)
 );
-
-ALTER TABLE job_cars
-    ADD PRIMARY KEY (id);

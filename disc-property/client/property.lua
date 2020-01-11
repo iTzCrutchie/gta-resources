@@ -7,16 +7,16 @@ function ShowViewProperty(property)
     end
 
     local options = {
-        { label = 'View Property', action = function()
+        { label = _U('view'), action = function()
             EnterProperty(property)
         end, },
-        { label = 'Buy Property for $' .. propData.price, action = function()
+        { label = _U('buy') .. propData.price, action = function()
             ShowConfirmBuy(property)
         end }
     }
 
     local menu = {
-        title = 'View Property',
+        title = _U('view'),
         name = 'view_property',
         options = options
     }
@@ -25,20 +25,20 @@ end
 
 function ShowManageProperty(property)
     local options = {
-        { label = 'Give Keys', action = function()
+        { label = _U('givekeys'), action = function()
             ShowGiveKeys(property)
         end },
-        { label = 'Take Keys', action = function()
+        { label = _U('takekeys'), action = function()
             ShowKeyUsers(property)
         end },
-        { label = 'Sell Property', action = function()
+        { label = _U('sell'), action = function()
             ShowConfirmSell(property)
         end }
     }
 
     local menu = {
         name = 'property_management',
-        title = 'Manage Property',
+        title = _U('manage'),
         options = options
     }
     TriggerEvent('disc-base:openMenu', menu)
@@ -46,17 +46,17 @@ end
 
 function ShowConfirmSell(property)
     local options = {
-        { label = 'Yes', action = function()
+        { label = _U('yes'), action = function()
             SellProperty(property)
         end },
-        { label = 'No', action = function()
+        { label = _U('no'), action = function()
             ESX.UI.Menu.Close('confirm_sell')
         end }
     }
 
     local menu = {
         name = 'confirm_sell',
-        title = 'Confirm',
+        title = _U('confirm'),
         options = options
     }
 
@@ -66,23 +66,23 @@ end
 function SellProperty(property)
     TriggerServerEvent('disc-property:sellProperty', property)
     ESX.UI.Menu.CloseAll()
-    exports['mythic_notify']:SendAlert('success', 'Property Sold!')
+    exports['mythic_notify']:SendAlert('success', _U('sold'))
     TriggerEvent('disc-property:forceUpdatePropertyData')
 end
 
 function ShowConfirmBuy(property)
     local options = {
-        { label = 'Yes', action = function()
+        { label = _U('yes'), action = function()
             BuyProperty(property)
         end },
-        { label = 'No', action = function()
+        { label = _U('no'), action = function()
             ESX.UI.Menu.Close('confirm_buy')
         end }
     }
 
     local menu = {
         name = 'confirm_buy',
-        title = 'Confirm',
+        title = _U('confirm'),
         options = options
     }
 
@@ -93,10 +93,10 @@ function BuyProperty(property)
     ESX.TriggerServerCallback('disc-property:buyProperty', function(bought)
         if bought then
             ESX.UI.Menu.CloseAll()
-            exports['mythic_notify']:SendAlert('success', 'Property Bought!')
+            exports['mythic_notify']:SendAlert('success', _U('bought'))
             TriggerEvent('disc-property:forceUpdatePropertyData')
         else
-            exports['mythic_notify']:SendAlert('error', 'You do not have enough money')
+            exports['mythic_notify']:SendAlert('error', _U('notenough'))
         end
     end, property)
 end
@@ -105,7 +105,7 @@ function ShowGiveKeys(property)
     local menu = {
         type = 'dialog',
         name = 'searching_users',
-        title = 'Insert First or Last Name',
+        title = _U('name'),
         action = function(value)
             ShowSearchedUsers(value, property)
         end
@@ -116,7 +116,7 @@ end
 function ShowSearchedUsers(value, property)
     ESX.TriggerServerCallback('disc-property:searchUsers', function(results)
         if #results == 0 then
-            exports['mythic_notify']:SendAlert('error', 'No civilian found')
+            exports['mythic_notify']:SendAlert('error', _U('nobodyfound'))
             return
         end
         local options = {}
@@ -125,7 +125,7 @@ function ShowSearchedUsers(value, property)
                     {
                         label = v.firstname .. ' ' .. v.lastname, action = function(value, m)
                         TriggerServerEvent('disc-property:GiveKeys', property, v.identifier)
-                        exports['mythic_notify']:SendAlert('success', 'Gave keys to ' .. v.firstname .. ' ' .. v.lastname)
+                        exports['mythic_notify']:SendAlert('success', _U('gavekeys') .. v.firstname .. ' ' .. v.lastname)
                         ESX.UI.Menu.CloseAll()
                     end
                     })
@@ -133,7 +133,7 @@ function ShowSearchedUsers(value, property)
         local menu = {
             type = 'default',
             name = 'property_civ_select',
-            title = 'Select Civilian',
+            title = _U('select'),
             options = options
         }
         TriggerEvent('disc-base:openMenu', menu)
@@ -143,7 +143,7 @@ end
 function ShowKeyUsers(property)
     ESX.TriggerServerCallback('disc-property:getKeyUsers', function(results)
         if #results == 0 then
-            exports['mythic_notify']:SendAlert('error', 'No civilian found')
+            exports['mythic_notify']:SendAlert('error', _U('nobodyfound'))
             return
         end
         local options = {}
@@ -152,7 +152,7 @@ function ShowKeyUsers(property)
                     {
                         label = v.firstname .. ' ' .. v.lastname, action = function(value, m)
                         TriggerServerEvent('disc-property:TakeKeys', property, v.identifier)
-                        exports['mythic_notify']:SendAlert('success', 'Took keys from ' .. v.firstname .. ' ' .. v.lastname)
+                        exports['mythic_notify']:SendAlert('success', _U('tookkeys') .. v.firstname .. ' ' .. v.lastname)
                         ESX.UI.Menu.CloseAll()
                     end
                     })
@@ -160,7 +160,7 @@ function ShowKeyUsers(property)
         local menu = {
             type = 'default',
             name = 'property_civ_select',
-            title = 'Select Civilian',
+            title = _U('select'),
             options = options
         }
         TriggerEvent('disc-base:openMenu', menu)

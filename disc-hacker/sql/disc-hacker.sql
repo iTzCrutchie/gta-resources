@@ -1,0 +1,1 @@
+INSERT INTO essentialmode.items (name, label, `limit`, rare, can_remove) VALUES ('hacktool', 'Hacking Tablet', 1, 1, 1);

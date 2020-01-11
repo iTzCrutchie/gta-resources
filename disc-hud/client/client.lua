@@ -64,11 +64,11 @@ function getCardinalDirectionFromHeading(heading)
     if ((heading >= 0 and heading < 45) or (heading >= 315 and heading < 360)) then
         return "Northbound" -- North
     elseif (heading >= 45 and heading < 135) then
-        return "Eastbound" -- East
+        return "Westbound" -- West
     elseif (heading >= 135 and heading < 225) then
         return "Southbound" -- South
     elseif (heading >= 225 and heading < 315) then
-        return "Westbound" -- West
+        return "Eastbound" -- East
     end
 end
 

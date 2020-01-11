@@ -61,7 +61,7 @@ It is the same concept that [ESX](https://github.com/ESX-Org/es_extended) works 
 - [Disc-Tax](https://github.com/DiscworldZA/gta-resources/tree/master/disc-tax)
 - [Disc-Teleport](https://github.com/DiscworldZA/gta-resources/tree/master/disc-teleport)
 - [Disc-VehiclePick](https://github.com/DiscworldZA/gta-resources/tree/master/disc-vehiclepick)
-- [Disc-VehicleSales](https://github.com/DiscworldZA/gta-resources/tree/master/disc-ehiclesales)
+- [Disc-VehicleSales](https://github.com/DiscworldZA/gta-resources/tree/master/disc-vehiclesales)
 - [Disc-Warrant](https://github.com/DiscworldZA/gta-resources/tree/master/disc-warrant)
 
 

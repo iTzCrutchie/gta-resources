@@ -31,8 +31,8 @@ body {
             width: 34%;
             position: absolute;
             bottom: 1%;
-            right: 2.5%;
-            text-align: right;
+            left: 2.5%;
+            text-align: left;
             box-shadow: 1px 1px 57px rgba(0, 0, 0, .4);
             background-color: $inv-background;
             overflow: hidden;
@@ -70,7 +70,7 @@ body {
             .inventory-wrapper {
                 display: inline-block;
                 height: 100%;
-                width: 40%;
+                width: 35%;
                 overflow: visible;
                 position: absolute;
                 left: 0;
@@ -166,7 +166,7 @@ body {
         
             #controls {
                 display: inline-block;
-                width: 20%;
+                width: 30%;
                 height: 100%;
                 position: absolute;
                 left: 0;
@@ -178,9 +178,32 @@ body {
                     text-align: center;
                     padding: 10px;
                     background-color: $primary;
-                    width: 50%;
+                    width: 30%;
                     position: absolute;
-                    left: 50%;
+                    left: 28%;
+                    top: 15%;
+                    transform: translate(-50%, -50%);                        
+                    border: 2px solid $border;
+                    border-radius: 5px;
+        
+                    .ammoIcon {
+                        width: 10px;
+                        height: 10px;
+                    }
+                    
+                    .moneyIcon {
+                        width: 15px;
+                        height: 15px;
+                    }
+                }
+
+                .second-info-div {
+                    text-align: center;
+                    padding: 10px;
+                    background-color: $primary;
+                    width: 30%;
+                    position: absolute;
+                    right: 0%;
                     top: 15%;
                     transform: translate(-50%, -50%);                        
                     border: 2px solid $border;
@@ -203,10 +226,48 @@ body {
         
                 .controls-div {
                     position: absolute;
-                    left: 50%;
-                    top: 50%;
+                    left: 28%;
+                    top: 45%;
                     transform: translate(-50%, -50%);
-                    width: 50%;
+                    width: 30%;
+                
+                    .control {
+                        width: 100%;
+                        height: 40px;
+                        background-color: $primary;
+                        margin-bottom: 10px;
+                        text-align: center;
+                        vertical-align: middle;
+                        line-height: 40px;
+                        border: 2px solid $border;
+                        border-radius: 5px;
+
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+                    
+                        &.hover {
+                            transition: all ease-in 0.15s;
+                            filter: brightness(60%);
+                        }
+                    
+                        &.disabled {
+                            background-color: $disabled-control;
+                            transition: all ease-in 0.15s;
+                        }
+                    }
+                    #count {
+                        outline: none;
+                        font-size: 18px;
+                    }
+                }
+
+                .money-controls-div {
+                    position: absolute;
+                    right: 0%;
+                    top: 37%;
+                    transform: translate(-50%, -50%);
+                    width: 30%;
                 
                     .control {
                         width: 100%;
@@ -386,7 +447,7 @@ body {
             .item-other {
                 width: 100%;
                 min-width: 100%;
-                height: 162px;
+                height: 150px;
                 background-size: 70%;
                 background-repeat: no-repeat;
                 background-position: center center;
@@ -480,7 +541,7 @@ body {
         }
         
         .money {
-            padding: 10px;
+            padding: 3px;
         }
     }
     .near-players-wrapper {
@@ -554,7 +615,7 @@ body {
                     border: 2px solid $scroll-thumb;
                 }
     
-                .player, .cashchoice {
+                .player, .cashchoice, .cashstore, .cashtake {
                     width: 100%;
                     height: 50px;
                     line-height: 50px;

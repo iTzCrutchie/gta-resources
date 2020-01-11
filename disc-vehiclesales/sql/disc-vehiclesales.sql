@@ -1,6 +1,6 @@
 create table disc_vehiclesales_stored_vehicles
 (
-    id bigint unsigned auto_increment,
+    id bigint unsigned auto_increment PRIMARY KEY,
     plate text not null,
     props longtext not null,
     job text not null,
@@ -9,7 +9,3 @@ create table disc_vehiclesales_stored_vehicles
     constraint id
         unique (id)
 );
-
-alter table disc_vehiclesales_stored_vehicles
-    add primary key (id);
-

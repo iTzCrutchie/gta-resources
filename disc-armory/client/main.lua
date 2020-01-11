@@ -1,13 +1,14 @@
 ESX = nil
+ESXLoaded = false
 
 local currentArmory = nil
 
 Citizen.CreateThread(function()
     while ESX == nil do
+        Citizen.Wait(0)
         TriggerEvent('esx:getSharedObject', function(obj)
             ESX = obj
         end)
-        Citizen.Wait(0)
     end
 
     while ESX.GetPlayerData().job == nil do
@@ -15,6 +16,7 @@ Citizen.CreateThread(function()
     end
 
     ESX.PlayerData = ESX.GetPlayerData()
+    ESXLoaded = true
 end)
 
 RegisterNetEvent('esx:setJob')
@@ -23,6 +25,9 @@ AddEventHandler('esx:setJob', function(job)
 end)
 
 Citizen.CreateThread(function()
+    while not ESXLoaded do
+        Citizen.Wait(10)
+    end
     for k, v in pairs(Config.Armories) do
         local marker = {
             name = v.name,
@@ -30,7 +35,7 @@ Citizen.CreateThread(function()
             coords = v.coords,
             colour = { r = 55, b = 255, g = 55 },
             size = vector3(1.5, 1.5, 1.0),
-            msg = 'Press ~INPUT_CONTEXT~ to open the Armory',
+            msg = _U('key'),
             action = openArmoryMenu,
             armory = v,
             shouldDraw = function()
@@ -44,11 +49,11 @@ end)
 function openArmoryMenu(marker)
     local menu = {
         name = 'armory',
-        title = 'Armory',
+        title = _U('armory'),
         options = {
-            { label = 'Take', action = showStoredWeapons },
-            { label = 'Store', action = showStoringMenu },
-            { label = 'Buy', action = showBuyMenu },
+            { label = _U('take'), action = showStoredWeapons },
+            { label = _U('store'), action = showStoringMenu },
+            { label = _U('buy'), action = showBuyMenu },
         }
     }
     currentArmory = marker.armory
@@ -68,7 +73,7 @@ function showStoredWeapons()
 
                 local menu = {
                     name = "take_weapons",
-                    title = 'Take Weapons',
+                    title = _U('takewea'),
                     options = w
                 }
 
@@ -97,16 +102,16 @@ function takeOutWeapon(weapon)
     local playerPed = GetPlayerPed(-1)
 
     if doesPedHaveWeapon(playerPed, weapon) then
-        exports['mythic_notify']:SendAlert('success', 'You already have a ' .. ESX.GetWeaponLabel(weapon))
+        exports['mythic_notify']:SendAlert('success', _U('already') .. ESX.GetWeaponLabel(weapon))
     else
         ESX.TriggerServerCallback('disc-armory:modifyWeaponCount',
                 function(result)
                     if result then
-                        exports['mythic_notify']:SendAlert('success', 'Took Weapon ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('success', _U('took') .. ESX.GetWeaponLabel(weapon))
                         TriggerEvent('esx:addWeapon', weapon, 200)
                         ESX.UI.Menu.Close('default', 'disc-base', 'take_weapons')
                     else
-                        exports['mythic_notify']:SendAlert('error', 'Unable to take Weapon ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('error', _U('unabletake') .. ESX.GetWeaponLabel(weapon))
                     end
                 end, currentArmory.job, weapon, -1)
     end
@@ -116,11 +121,11 @@ function putWeapon(weapon)
     ESX.TriggerServerCallback('disc-armory:modifyWeaponCount',
             function(result)
                 if result then
-                    exports['mythic_notify']:SendAlert('success', 'Stored Weapon ' .. ESX.GetWeaponLabel(weapon))
+                    exports['mythic_notify']:SendAlert('success', _U('stored') .. ESX.GetWeaponLabel(weapon))
                     TriggerEvent('esx:removeWeapon', weapon)
                     ESX.UI.Menu.Close('default', 'disc-base', 'store_weapons')
                 else
-                    exports['mythic_notify']:SendAlert('error', 'Failed to store Weapon ' .. ESX.GetWeaponLabel(weapon))
+                    exports['mythic_notify']:SendAlert('error', _U('failedstore') .. ESX.GetWeaponLabel(weapon))
                 end
             end, currentArmory.job, weapon, 1)
 end
@@ -128,18 +133,18 @@ end
 function buyWeapon(weapon, price)
     local playerPed = GetPlayerPed(-1)
     if doesPedHaveWeapon(playerPed, weapon) then
-        exports['mythic_notify']:SendAlert('success', 'You already have a ' .. ESX.GetWeaponLabel(weapon))
+        exports['mythic_notify']:SendAlert('success', _U('already') .. ESX.GetWeaponLabel(weapon))
     else
         ESX.TriggerServerCallback('disc-base:buy',
                 function(bought)
                     if bought == 1 then
                         TriggerEvent('esx:addWeapon', weapon, 200)
-                        exports['mythic_notify']:SendAlert('success', 'You bought a ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('success', _U('bought') .. ESX.GetWeaponLabel(weapon))
                         ESX.UI.Menu.Close('default', 'disc-base', 'buy_weapons')
                     elseif bought == 0 then
-                        exports['mythic_notify']:SendAlert('error', 'You need $' .. price .. ' to buy a ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('error', _U('need') .. price .. ' to buy a ' .. ESX.GetWeaponLabel(weapon))
                     else
-                        exports['mythic_notify']:SendAlert('error', 'Unable to buy Weapon ' .. ESX.GetWeaponLabel(weapon))
+                        exports['mythic_notify']:SendAlert('error', _U('unablebuyweapon') .. ESX.GetWeaponLabel(weapon))
                     end
                 end, price)
     end
@@ -156,7 +161,7 @@ function showBuyMenu()
 
     local menu = {
         name = 'buy_weapons',
-        title = 'Buy Weapons',
+        title = _U('buyweapons'),
         options = weapons
     }
 
@@ -181,9 +186,8 @@ function showStoringMenu()
     end
     local menu = {
         name = "store_weapons",
-        title = 'Store Weapons',
+        title = _U('storeweapon'),
         options = weapons
     }
     TriggerEvent('disc-base:openMenu', menu)
 end
-

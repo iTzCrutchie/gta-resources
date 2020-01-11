@@ -1,6 +1,6 @@
 create table if not exists compensation
 (
-    id bigint unsigned auto_increment,
+    id bigint unsigned auto_increment PRIMARY KEY,
     compensator text not null,
     receiver text not null,
     reason longtext not null,
@@ -8,6 +8,3 @@ create table if not exists compensation
     constraint id
         unique (id)
 );
-
-alter table compensation
-    add primary key (id);

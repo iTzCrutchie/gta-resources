@@ -13,9 +13,9 @@ AddEventHandler('disc-base:registerItemUse', function(item, cb)
 end)
 
 function UseItem(source, item)
-    print('Using' .. item)
     for k, v in pairs(items[item].callbacks) do
         v(source, item)
+        Citizen.Wait(10)
     end
 end
 

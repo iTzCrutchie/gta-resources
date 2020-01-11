@@ -1,20 +1,14 @@
 local markers = {}
+local drawingMarkers = {}
 local CurrentMarker = nil
 local blips = {}
 
 local HasAlreadyEnteredMarker
 
---[[
-    Usage:
-    marker = {
-        type = 20
-        coords = {x, y, z},
-        colour = {r, g, b},
-        shouldDraw = function() returns boolean,
-        action = function(marker),
-        msg = 'Display this when entered'
-    }
-]]--
+RegisterCommand('clearmarkers', function()
+    drawingMarkers = {}
+    markers = {}
+end)
 
 RegisterNetEvent('disc-base:registerMarker')
 AddEventHandler('disc-base:registerMarker', function(marker)
@@ -26,6 +20,8 @@ AddEventHandler('disc-base:registerMarker', function(marker)
         marker.shouldDraw = function()
             return true
         end
+    else
+        marker.shouldDraw()
     end
 
     if marker.command then
@@ -40,10 +36,16 @@ AddEventHandler('disc-base:registerMarker', function(marker)
         end)
     end
 
-    if markers[marker.name] then
+    if Config.Debug then
+        print('[Disc-Base] Registering Marker ' .. marker.name)
+    end
+    if markers[marker.name] ~= nil then
+        marker.changed = true
+        markers[marker.name] = marker
+    elseif marker.name ~= nil then
         markers[marker.name] = marker
     else
-        markers[getOrElse(marker.name, #markers + 1)] = marker
+        table.insert(marker.name)
     end
 
 end)
@@ -51,25 +53,27 @@ end)
 RegisterNetEvent('disc-base:removeMarker')
 AddEventHandler('disc-base:removeMarker', function(name)
     markers[name] = nil
+    drawingMarkers[name] = nil
 end)
 
 Citizen.CreateThread(function()
-
     while true do
-        Citizen.Wait(1)
-        local playerPed = PlayerPedId()
-        local coords = GetEntityCoords(playerPed)
+        Citizen.Wait(1000)
         local isInMarker = false
         local lastMarker
+        local playerPed = PlayerPedId()
+        local coords = GetEntityCoords(playerPed)
         for k, v in pairs(markers) do
-            local distance = GetDistanceBetweenCoords(coords.x, coords.y, coords.z, v.coords.x, v.coords.y, v.coords.z, true)
-            if distance < Config.DrawDistance and v.shouldDraw() then
-                if v.show3D then
-                    if distance < Config.Draw3DDistance then
-                        ESX.Game.Utils.DrawText3D(v.coords, v.msg, 0.5)
+            if v.shouldDraw() then
+                local distance = #(coords - v.coords)
+                if (drawingMarkers[k] == nil or v.changed) and distance <= Config.DrawDistance then
+                    markers[k].changed = false
+                    drawingMarkers[k] = v
+                elseif drawingMarkers[k] ~= nil then
+                    drawingMarkers[k].distance = distance
+                    if distance > Config.DrawDistance then
+                        drawingMarkers[k] = nil
                     end
-                elseif v.type ~= -1 then
-                    DrawMarker(v.type, v.coords, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, v.size.x, v.size.y, v.size.z, v.colour.r, v.colour.g, v.colour.b, 100, getOrElse(v.bob, false), true, 2, getOrElse(v.rotate, true), false, false, false)
                 end
                 if distance < v.size.x then
                     if v.enableE then
@@ -90,7 +94,22 @@ Citizen.CreateThread(function()
             TriggerEvent('disc-base:hasExitedMarker')
         end
     end
+end)
 
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+        for k, v in pairs(drawingMarkers) do
+            if v.show3D then
+                if v.distance ~= nil and v.distance <= Config.Draw3DDistance then
+                    ESX.Game.Utils.DrawText3D(v.coords, v.msg, 0.5)
+                end
+            elseif v.type ~= -1 then
+                DrawMarker(v.type, v.coords, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, v.size.x, v.size.y, v.size.z, v.colour.r, v.colour.g, v.colour.b, 100, getOrElse(v.bob, false), true, 2, getOrElse(v.rotate, true), false, false, false)
+            end
+        end
+
+    end
 end)
 
 AddEventHandler('disc-base:hasExitedMarker', function()
@@ -108,8 +127,7 @@ end)
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
-
-        if CurrentMarker and CurrentMarker.shouldDraw() then
+        if CurrentMarker then
             if not CurrentMarker.show3D and CurrentMarker.msg then
                 ESX.ShowHelpNotification(CurrentMarker.msg)
             end
@@ -193,5 +211,11 @@ AddEventHandler('disc-base:updateBlip', function(blip, debug)
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentString(blip.name)
         EndTextCommandSetBlipName(_blip)
+    end
+end)
+
+AddEventHandler('onResourceStop', function(resource)
+    if resource:find('disc') then
+        TriggerEvent('disc-base:hasExitedMarker')
     end
 end)

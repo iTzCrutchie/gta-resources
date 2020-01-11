@@ -30,9 +30,19 @@
             </div>
             <div id="controls">
                 <div class="info-div">
+                    <div class="money">Player</div>
                     <div class="money" id="bank"></div>
                     <div class="money" id="cash"></div>
                     <div class="money" id="black_money"></div>
+                </div>
+                <div class="money-controls-div">
+                    <div class="control" id="take">Take</div>
+                    <div class="control" id="store">Store</div>
+                </div>
+                <div class="second-info-div">
+                    <div class="money" id="second-title"></div>
+                    <div class="money" id="second-cash"></div>
+                    <div class="money" id="second-black_money"></div>
                 </div>
                 <div class="controls-div">
                     <input type="number" class="control" id="count" value="0" onClick="this.select();">
@@ -80,6 +90,7 @@
     <div id="use-alert"></div>
     <div id="action-bar"></div>
 
+    <script src="locales/en.js"></script>
     <script src="./js/jquery.min.js" type="text/javascript"></script>
     <script src="./js/jquery-ui.min.js" type="text/javascript"></script>
     <script src="./js/popper.min.js" type="text/javascript"></script>
@@ -87,4 +98,16 @@
     <script src="./js/config.js" type="text/javascript"></script>
     <script src="./js/inventory.js" type="text/javascript"></script>
 </body>
+<script>
+    $(document).ready(function () {
+        $("#use").html(invLocale.useItem);
+        $("#give").html(invLocale.giveItem);
+        $("#pay").html(invLocale.dropItem);
+        $("#inv-label").html(invLocale.label);
+	$("#steal").html(invLocale.stealmoney);
+	$("#seize").html(invLocale.seizemoney);
+	$("#take").html(invLocale.takemoney);
+	$("#store").html(invLocale.storemoney);
+    });
+</script>
 </html>

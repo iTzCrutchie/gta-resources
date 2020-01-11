@@ -24,6 +24,12 @@ RegisterNUICallback('CombineStack', function(data, cb)
     cb('OK')
 end)
 
+RegisterNUICallback('TopoffStack', function(data, cb)
+    TriggerServerEvent('disc-inventoryhud:TopoffStack', data)
+    TriggerEvent('disc-inventoryhud:TopoffStack', data)
+    cb('OK')
+end)
+
 RegisterNUICallback('SwapItems', function(data, cb)
     TriggerServerEvent('disc-inventoryhud:SwapItems', data)
     TriggerEvent('disc-inventoryhud:SwapItems', data)
@@ -31,7 +37,6 @@ RegisterNUICallback('SwapItems', function(data, cb)
 end)
 
 RegisterNUICallback('GiveItem', function(data, cb)
-    TriggerServerEvent('disc-inventoryhud:notifyImpendingRemoval', data.item, data.number)
     TriggerServerEvent('disc-inventoryhud:GiveItem', data)
     cb('OK')
 end)
@@ -41,22 +46,32 @@ RegisterNUICallback('GiveCash', function(data, cb)
     cb('OK')
 end)
 
-RegisterNUICallback('GetNearPlayers', function(data)
+RegisterNUICallback('CashStore', function(data, cb)
+    TriggerServerEvent('disc-inventoryhud:CashStore', data)
+    cb('OK')
+end)
 
+RegisterNUICallback('CashTake', function(data, cb)
+    TriggerServerEvent('disc-inventoryhud:CashTake', data)
+    cb('OK')
+end)
+
+RegisterNUICallback('GetNearPlayers', function(data, cb)
     if data.action == 'give' then
         SendNUIMessage({
             action = "nearPlayersGive",
             players = GetNeareastPlayers(),
-            item = data.item
+            originItem = data.originItem
         })
     end
-
     if data.action == 'pay' then
         SendNUIMessage({
             action = "nearPlayersPay",
             players = GetNeareastPlayers(),
+            originItem = data.originItem
         })
     end
+    cb('OK')
 end)
 
 function GetNeareastPlayers()
@@ -77,11 +92,11 @@ end
 
 RegisterNetEvent('disc-inventoryhud:refreshInventory')
 AddEventHandler('disc-inventoryhud:refreshInventory', function()
+    Citizen.Wait(250)
     refreshPlayerInventory()
     if secondInventory ~= nil then
         refreshSecondaryInventory()
     end
-    Citizen.Wait(100)
     SendNUIMessage({
         action = "unlock"
     })
@@ -109,21 +124,42 @@ function refreshPlayerInventory()
 end
 
 function refreshSecondaryInventory()
-    ESX.TriggerServerCallback('disc-inventoryhud:getSecondaryInventory', function(data)
-        SendNUIMessage(
-                { action = "setSecondInventoryItems",
-                  itemList = data.inventory,
-                  invOwner = data.invId,
-                  invTier = data.invTier,
-                }
-        )
-        TriggerServerEvent('disc-inventoryhud:openInventory', secondInventory)
+    ESX.TriggerServerCallback('disc-inventoryhud:canOpenInventory', function(canOpen)
+        if canOpen or secondInventory.type == 'shop' then
+            ESX.TriggerServerCallback('disc-inventoryhud:getSecondaryInventory', function(data)
+                SendNUIMessage(
+                        { action = "setSecondInventoryItems",
+                          itemList = data.inventory,
+                          invOwner = data.invId,
+                          invTier = data.invTier,
+                          money = {
+                              cash = data.cash,
+                              black_money = data.black_money
+                          }
+                        }
+                )
+                SendNUIMessage(
+                        {
+                            action = "show",
+                            type = 'secondary'
+                        }
+                )
+                TriggerServerEvent('disc-inventoryhud:openInventory', secondInventory)
+            end, secondInventory.type, secondInventory.owner)
+        else
+            SendNUIMessage(
+                    {
+                        action = "hide",
+                        type = 'secondary'
+                    }
+            )
+        end
     end, secondInventory.type, secondInventory.owner)
 end
 
 function closeInventory()
     isInInventory = false
-    SendNUIMessage({ action = "hide" })
+    SendNUIMessage({ action = "hide", type = 'primary' })
     SetNuiFocus(false, false)
     TriggerServerEvent('disc-inventoryhud:closeInventory', {
         type = 'player',
@@ -179,6 +215,12 @@ AddEventHandler("disc-inventoryhud:EmptySplitStack", function(data)
     playStealOrSearchAnimation(data)
 end)
 
+RegisterNetEvent("disc-inventoryhud:TopoffStack")
+AddEventHandler("disc-inventoryhud:TopoffStack", function(data)
+    playPickupOrDropAnimation(data)
+    playStealOrSearchAnimation(data)
+end)
+
 RegisterNetEvent("disc-inventoryhud:SplitStack")
 AddEventHandler("disc-inventoryhud:SplitStack", function(data)
     playPickupOrDropAnimation(data)
@@ -213,7 +255,7 @@ function playStealOrSearchAnimation(data)
         local playerPed = GetPlayerPed(-1)
         if not IsEntityPlayingAnim(playerPed, 'random@mugging4', 'agitated_loop_a', 3) then
             ESX.Streaming.RequestAnimDict('random@mugging4', function()
-                TaskPlayAnim(playerPed, 'random@mugging4', 'agitated_loop_a', 8.0, -8, -1, 48, 0, 0, 0, 0)
+                --- TaskPlayAnim(playerPed, 'random@mugging4', 'agitated_loop_a', 8.0, -8, -1, 48, 0, 0, 0, 0)
             end)
         end
     end
